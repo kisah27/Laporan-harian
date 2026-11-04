@@ -23,7 +23,7 @@ section.tab.active{display:block}
 .card .sub{color:var(--muted);font-size:12.5px;margin:0 0 12px}
 .form-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px}
 label.f{font-size:12px;font-weight:700;color:#475569;display:block;margin-bottom:4px}
-select,input[type=text],input[type=date]{width:100%;padding:9px 10px;border:1px solid #cbd5e1;border-radius:8px;font-size:14px;background:#fff;color:var(--ink)}
+select,input[type=text],input[type=date],input[type=month]{width:100%;padding:9px 10px;border:1px solid #cbd5e1;border-radius:8px;font-size:14px;background:#fff;color:var(--ink)}
 select:focus,input:focus{outline:2px solid #bfdbfe;border-color:#60a5fa}
 .actions{margin-top:12px;display:flex;gap:8px;flex-wrap:wrap;align-items:center}
 .btn{border:1px solid transparent;border-radius:8px;padding:9px 14px;font-size:13.5px;font-weight:600;cursor:pointer;white-space:nowrap}
@@ -42,7 +42,7 @@ select:focus,input:focus{outline:2px solid #bfdbfe;border-color:#60a5fa}
 .sum-t{font-size:11px;color:var(--muted);margin-top:1px}
 .row-head{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap}
 .filters{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
-.filters select{width:auto;min-width:170px}
+.filters select,.filters input[type=month]{width:auto;min-width:150px}
 #rekapInfo{font-size:12.5px;color:var(--muted);margin:6px 0 12px}
 .kontrak-card{border-left-width:5px}
 .kontrak-card.kb-A{border-left-color:#6366f1}.kontrak-card.kb-B{border-left-color:#14b8a6}.kontrak-card.kb-C{border-left-color:#f97316}.kontrak-card.kb-D{border-left-color:#a855f7}
@@ -70,7 +70,7 @@ footer.note{max-width:1100px;margin:0 auto;padding:0 14px 30px;color:var(--muted
 ol.steps{margin:0;padding-left:20px}
 ol.steps li{margin-bottom:8px}
 code{background:#f1f5f9;border:1px solid var(--line);border-radius:5px;padding:1px 6px;font-size:12.5px}
-@media (max-width:640px){select,input[type=text],input[type=date]{font-size:16px}}
+@media (max-width:640px){select,input[type=text],input[type=date],input[type=month]{font-size:16px}}
 </style>
 </head>
 <body>
@@ -128,6 +128,7 @@ code{background:#f1f5f9;border:1px solid var(--line);border-radius:5px;padding:1
         <select id="rTgl" title="Filter tanggal"></select>
         <button class="btn ghost" id="btnPng" title="Simpan rekap sebagai gambar PNG bergaya tabel Excel">🖼️ Unduh Gambar Tabel</button>
         <button class="btn ghost" id="btnXlsx" title="Simpan rekap sebagai file Excel (.xlsx) — sheet Rekap + Semua Data">📊 Unduh Excel</button>
+        <button class="btn wa" id="btnXlsxWa" title="Kirim file Excel rekap ini lewat WhatsApp — di HP: sheet berbagi terbuka, pilih WhatsApp; di komputer: file diunduh lalu dilampirkan ke chat yang terbuka">📎 Kirim Excel ke WA</button>
         <button class="btn wa" id="btnSendAll">📤 Kirim WA Semua Kontrak</button>
       </div>
     </div>
@@ -141,6 +142,21 @@ code{background:#f1f5f9;border:1px solid var(--line);border-radius:5px;padding:1
     </div>
   </div>
   <div id="rekapWrap"></div>
+  <div class="card" id="bulanCard">
+    <div class="row-head">
+      <div>
+        <h2>Laporan Bulanan per No. Pol</h2>
+        <p class="sub" style="margin-bottom:0">Rekap <b>satu bulan penuh</b> untuk setiap unit — file Excel bergaris berisi jumlah Kirim/Inap/Standby/Storing per unit, kalender status tanggal 1–31, dan detail semua laporan bulan itu.</p>
+      </div>
+      <div class="filters">
+        <input type="month" id="mBulan" title="Pilih bulan laporan">
+        <button class="btn ghost" id="btnBulanXlsx" title="Unduh laporan bulanan sebagai file Excel (.xlsx) bergaris">📊 Unduh Excel Bulanan</button>
+        <button class="btn wa" id="btnBulanWa" title="Kirim file Excel bulanan lewat WhatsApp">📎 Kirim Excel ke WA</button>
+      </div>
+    </div>
+    <div id="bulanInfo" style="font-size:12.5px;color:var(--muted);margin:6px 0 0"></div>
+    <div id="bulanPrev"></div>
+  </div>
 </section>
 
 <section id="tab-tujuan" class="tab">
@@ -180,6 +196,8 @@ code{background:#f1f5f9;border:1px solid var(--line);border-radius:5px;padding:1
       <li><b>Kirim WhatsApp</b> — di tab <b>📤 Rekap &amp; Kirim WA</b> klik <b>📤 Kirim WA Semua Kontrak</b>: kontrak A, B, C, D digabung menjadi <b>satu pesan</b> dan terkirim sekali. Pesan berformat <b>struk</b> — rata mono bergaris dengan emoji warna status. Nomor tujuan diatur di bawah; bila kosong, Anda tinggal memilih kontak saat WhatsApp terbuka.</li>
       <li><b>Unduh gambar tabel</b> — di tab <b>📤 Rekap &amp; Kirim WA</b> klik <b>🖼️ Unduh Gambar Tabel</b> untuk menyimpan rekap sebagai <b>gambar PNG</b> bergaya tabel Excel (bergaris dan berwarna per kontrak) — praktis dilampirkan ke WhatsApp.</li>
       <li><b>Rekap ke Excel</b> — di tab <b>📤 Rekap &amp; Kirim WA</b> klik <b>📊 Unduh Excel</b>. Hasilnya file <b>.xlsx</b> berisi sheet <b>Rekap</b> (tabel berwarna per kontrak &amp; status, sama seperti rekap yang dikirim ke WhatsApp) dan sheet <b>Semua Data</b> (seluruh riwayat laporan dengan filter siap pakai — tinggal disalin ke file rekap Excel Anda). File bisa dibuka di Excel, WPS Office, atau Google Sheets.</li>
+      <li><b>Kirim Excel ke WhatsApp</b> — klik <b>📎 Kirim Excel ke WA</b> (rekap harian atau bulanan). Di <b>HP</b> (Android/Chrome): sheet berbagi terbuka — pilih <b>WhatsApp</b>, pilih kontak, dan file Excel langsung terlampir di chat. Di <b>komputer</b>: file Excel otomatis diunduh dan WhatsApp terbuka — kirim pesannya, lalu <b>lampirkan file yang barusan diunduh</b> lewat ikon 📎 (tautan WA tidak bisa membawa file, jadi file dilampirkan manual).</li>
+      <li><b>Laporan bulanan per no. pol</b> — di bagian bawah tab <b>📤 Rekap &amp; Kirim WA</b>, pilih bulan lalu klik <b>📊 Unduh Excel Bulanan</b>: file Excel bergaris berisi sheet <b>Rekap per Unit</b> (jumlah Kirim/Inap/Standby/Storing tiap no. pol), sheet <b>Kalender Bulanan</b> (status tiap unit tanggal 1–31: K/I/S/ST, berwarna, akhir pekan disorot), dan sheet <b>Detail Harian</b> (semua laporan bulan itu). Bisa juga langsung dikirim ke WhatsApp dengan <b>📎 Kirim Excel ke WA</b>.</li>
       <li><b>Kalau popup WA tidak muncul</b> — izinkan popup di browser, atau pakai tombol <b>📋 Salin Pesan</b> lalu tempel manual ke WhatsApp.</li>
     </ol>
   </div>
@@ -577,7 +595,7 @@ function xlsStyles(){
   +'<border><left style="thin"><color rgb="FF94A3B8"/></left><right style="thin"><color rgb="FF94A3B8"/></right><top style="thin"><color rgb="FF94A3B8"/></top><bottom style="thin"><color rgb="FF94A3B8"/></bottom><diagonal/></border>'
   +'</borders>'
   +'<cellStyleXfs count="1"><xf numFmtId="0" fontId="0" fillId="0" borderId="0"/></cellStyleXfs>'
-  +'<cellXfs count="16">'
+  +'<cellXfs count="24">'
   +'<xf numFmtId="0" fontId="0" fillId="0" borderId="0" xfId="0"/>'
   +'<xf numFmtId="0" fontId="2" fillId="0" borderId="0" xfId="0"/>'
   +'<xf numFmtId="0" fontId="3" fillId="0" borderId="0" xfId="0"/>'
@@ -594,6 +612,14 @@ function xlsStyles(){
   +'<xf numFmtId="0" fontId="7" fillId="5" borderId="1" xfId="0"/>'
   +'<xf numFmtId="0" fontId="8" fillId="6" borderId="1" xfId="0"/>'
   +'<xf numFmtId="0" fontId="1" fillId="2" borderId="1" xfId="0"/>'
+  +'<xf numFmtId="0" fontId="0" fillId="0" borderId="1" xfId="0" applyAlignment="1"><alignment horizontal="center" vertical="center"/></xf>'
+  +'<xf numFmtId="0" fontId="0" fillId="2" borderId="1" xfId="0" applyAlignment="1"><alignment horizontal="center" vertical="center"/></xf>'
+  +'<xf numFmtId="0" fontId="7" fillId="5" borderId="1" xfId="0" applyAlignment="1"><alignment horizontal="center" vertical="center"/></xf>'
+  +'<xf numFmtId="0" fontId="5" fillId="3" borderId="1" xfId="0" applyAlignment="1"><alignment horizontal="center" vertical="center"/></xf>'
+  +'<xf numFmtId="0" fontId="6" fillId="4" borderId="1" xfId="0" applyAlignment="1"><alignment horizontal="center" vertical="center"/></xf>'
+  +'<xf numFmtId="0" fontId="8" fillId="6" borderId="1" xfId="0" applyAlignment="1"><alignment horizontal="center" vertical="center"/></xf>'
+  +'<xf numFmtId="0" fontId="1" fillId="2" borderId="1" xfId="0" applyAlignment="1"><alignment horizontal="center" vertical="center"/></xf>'
+  +'<xf numFmtId="0" fontId="1" fillId="0" borderId="1" xfId="0"/>'
   +'</cellXfs>'
   +'<cellStyles count="1"><cellStyle name="Normal" xfId="0" builtinId="0"/></cellStyles>'
   +'</styleSheet>';
@@ -683,6 +709,210 @@ function downloadRekapXlsx(){
     toast('⬇️ File Excel diunduh — sheet "Rekap" + sheet "Semua Data".');
   }catch(e){toast('⚠ Gagal membuat file Excel: '+e.message)}
 }
+function shareXlsxWa(u8,filename,caption){
+  var blob=new Blob([u8],{type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'});
+  function fallback(){
+    var a=document.createElement('a');
+    a.href=URL.createObjectURL(blob);a.download=filename;
+    document.body.appendChild(a);a.click();a.remove();
+    setTimeout(function(){URL.revokeObjectURL(a.href)},3000);
+    toast('⬇️ File Excel diunduh — kirim pesannya, lalu lampirkan file tadi ke chat WhatsApp (ikon 📎).');
+    openWa(caption,db.wa.admin);
+  }
+  try{
+    var file=new File([blob],filename,{type:blob.type});
+    if(navigator.canShare&&navigator.canShare({files:[file]})){
+      navigator.share({files:[file],text:caption}).then(function(){
+        toast('✓ Sheet berbagi terbuka — pilih WhatsApp untuk mengirim file Excel.');
+      },function(err){
+        if(err&&err.name==='AbortError')return;
+        fallback();
+      });
+      return;
+    }
+  }catch(e){}
+  fallback();
+}
+function sendRekapXlsxWa(){
+  var secs=KKEYS.map(function(k){return{k:k,rows:filteredRows(k)}});
+  var total=0;secs.forEach(function(s){total+=s.rows.length});
+  if(!total){toast('⚠ Belum ada laporan pada filter tanggal ini.');return}
+  try{
+    var u8=buildXlsx(secs,total);
+    shareXlsxWa(u8,'rekap-laporan-unit-'+(rekapDate==='ALL'?'semua-tanggal':rekapDate)+'.xlsx',buildAllMsg());
+  }catch(e){toast('⚠ Gagal membuat file Excel: '+e.message)}
+}
+//BULAN-BEGIN
+var BNAMA=['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'];
+var bulanYm=latestDate().slice(0,7);
+function bulanLabel(ym){var p=ym.split('-');return BNAMA[parseInt(p[1],10)-1]+' '+p[0]}
+function bulanRows(ym){
+  var map={},order=[];
+  function addU(unit,kontrak){
+    var key=String(unit).toUpperCase();
+    if(!map[key]){map[key]={unit:unit,kontrak:kontrak||'A',d:{}};order.push(key)}
+  }
+  db.unit.forEach(function(u){addU(u.unit,u.kontrak)});
+  db.laporan.forEach(function(l){if(l.tanggal.slice(0,7)===ym)addU(l.unit,l.kontrak)});
+  db.laporan.forEach(function(l){
+    if(l.tanggal.slice(0,7)!==ym)return;
+    var r=map[String(l.unit).toUpperCase()];
+    if(r)r.d[l.tanggal]=l.status;
+  });
+  order.sort(function(a,b){
+    var x=map[a],y=map[b];
+    return x.kontrak===y.kontrak?x.unit.localeCompare(y.unit):(x.kontrak<y.kontrak?-1:1);
+  });
+  return order.map(function(k){return map[k]});
+}
+function bulanCount(rows,ym){
+  var cnt={},total=0;
+  rows.forEach(function(r){cnt[r.unit.toUpperCase()]={'Kirim':0,'Inap':0,'Standby':0,'Storing Perbaikan':0}});
+  db.laporan.forEach(function(l){
+    if(l.tanggal.slice(0,7)!==ym)return;
+    var c=cnt[String(l.unit).toUpperCase()];
+    if(c&&c[l.status]!=null){c[l.status]++;total++}
+  });
+  return{cnt:cnt,total:total};
+}
+var BSCODE={'Kirim':'K','Inap':'I','Standby':'S','Storing Perbaikan':'ST'};
+var BSST={'Kirim':18,'Inap':19,'Standby':20,'Storing Perbaikan':21};
+var BSTATUS=['Kirim','Inap','Standby','Storing Perbaikan'];
+function buildBulanXlsx(ym){
+  var H='<?xml version="1.0" encoding="UTF-8" standalone="yes"?>';
+  var rows=bulanRows(ym),st=bulanCount(rows,ym);
+  var SECX={A:5,B:6,C:7,D:8};
+  var pgP='<pageMargins left="0.4" right="0.4" top="0.5" bottom="0.5" header="0.3" footer="0.3"/><pageSetup paperSize="9" orientation="portrait" fitToWidth="1" fitToHeight="0"/>';
+  var pgL='<pageMargins left="0.3" right="0.3" top="0.5" bottom="0.5" header="0.3" footer="0.3"/><pageSetup paperSize="9" orientation="landscape" fitToWidth="1" fitToHeight="0"/>';
+  function mrow(v,s,n){var a=[{v:v,s:s}];for(var i=1;i<n;i++)a.push({s:s});return a}
+  // -- Sheet 1: Rekap per Unit --
+  var merges=[],r1=0,rows1=[];
+  function add1(cells){rows1.push(xlsRow(++r1,cells))}
+  add1(mrow('LAPORAN BULANAN UNIT SINAR MAJU JAYA',1,8));merges.push('A1:H1');
+  add1(mrow('THE UNI VENUS SERANG BANTEN',2,8));merges.push('A2:H2');
+  add1(mrow('Periode: '+bulanLabel(ym)+'  ·  '+st.total+' laporan tercatat',3,8));merges.push('A3:H3');
+  add1([]);
+  add1([{v:'NO',s:4},{v:'KONTRAK',s:4},{v:'NO. POL / UNIT',s:4},{v:'KIRIM',s:4},{v:'INAP',s:4},{v:'STANDBY',s:4},{v:'STORING',s:4},{v:'TOTAL',s:4}]);
+  var tot={'Kirim':0,'Inap':0,'Standby':0,'Storing Perbaikan':0};
+  rows.forEach(function(r,i){
+    var c=st.cnt[r.unit.toUpperCase()]||{},n=0;
+    BSTATUS.forEach(function(s){var v=c[s]||0;tot[s]+=v;n+=v});
+    add1([{v:String(i+1),s:16},{v:'KONTRAK '+r.kontrak,s:SECX[r.kontrak]||10},{v:r.unit,s:23},
+      {v:String(c['Kirim']||0),s:(c['Kirim']?18:16)},
+      {v:String(c['Inap']||0),s:(c['Inap']?19:16)},
+      {v:String(c['Standby']||0),s:(c['Standby']?20:16)},
+      {v:String(c['Storing Perbaikan']||0),s:(c['Storing Perbaikan']?21:16)},
+      {v:String(n),s:16}]);
+  });
+  add1([{v:'TOTAL',s:15},{s:15},{s:15},{v:String(tot['Kirim']),s:22},{v:String(tot['Inap']),s:22},{v:String(tot['Standby']),s:22},{v:String(tot['Storing Perbaikan']),s:22},{v:String(st.total),s:22}]);
+  merges.push('A'+r1+':C'+r1);
+  var tail1='<mergeCells count="'+merges.length+'">'+merges.map(function(m){return '<mergeCell ref="'+m+'"/>'}).join('')+'</mergeCells>';
+  var ws1=H+'<worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"><sheetPr><pageSetUpPr fitToPage="1"/></sheetPr><sheetViews><sheetView workbookViewId="0"/></sheetViews>'+xlsCols([5,24,18,8,8,10,10,8])+'<sheetData>'+rows1.join('')+'</sheetData>'+tail1+pgP+'</worksheet>';
+  // -- Sheet 2: Kalender Bulanan --
+  var Y=parseInt(ym.slice(0,4),10),M=parseInt(ym.slice(5,7),10);
+  var ND=new Date(Y,M,0).getDate(),NC=1+ND;
+  var LASTL=xlsColL(NC),WHAR=['Sen','Sel','Rab','Kam','Jum','Sab','Min'];
+  var mg2=[],r2=0,rows2=[];
+  function add2(cells){rows2.push(xlsRow(++r2,cells))}
+  add2(mrow('LAPORAN BULANAN UNIT SINAR MAJU JAYA',1,NC));mg2.push('A1:'+LASTL+'1');
+  add2(mrow('THE UNI VENUS SERANG BANTEN',2,NC));mg2.push('A2:'+LASTL+'2');
+  add2(mrow('Periode: '+bulanLabel(ym)+'  ·  K = Kirim · I = Inap · S = Standby · ST = Storing Perbaikan · kosong = tidak ada laporan',3,NC));mg2.push('A3:'+LASTL+'3');
+  var hd=[{v:'NO. POL / UNIT',s:4}];
+  for(var d=1;d<=ND;d++){var wd=new Date(Y,M-1,d).getDay();hd.push({v:WHAR[(wd+6)%7],s:4})}
+  add2(hd);
+  var hd2=[{s:4}];
+  for(var d2=1;d2<=ND;d2++)hd2.push({v:String(d2),s:4});
+  add2(hd2);
+  mg2.push('A4:A5');
+  rows.forEach(function(r){
+    var cells=[{v:r.unit,s:23}];
+    for(var d3=1;d3<=ND;d3++){
+      var s=r.d[ym+'-'+pad(d3)];
+      if(s)cells.push({v:BSCODE[s]||'',s:BSST[s]||16});
+      else{
+        var wd2=new Date(Y,M-1,d3).getDay();
+        cells.push({s:(wd2===0||wd2===6)?17:16});
+      }
+    }
+    add2(cells);
+  });
+  var tail2='<mergeCells count="'+mg2.length+'">'+mg2.map(function(m){return '<mergeCell ref="'+m+'"/>'}).join('')+'</mergeCells>';
+  var cw=[18];for(var d4=1;d4<=ND;d4++)cw.push(4.6);
+  var ws2=H+'<worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"><sheetPr><pageSetUpPr fitToPage="1"/></sheetPr><sheetViews><sheetView workbookViewId="0"><pane xSplit="1" ySplit="5" topLeftCell="B6" activePane="bottomRight" state="frozen"/></sheetView></sheetViews>'+xlsCols(cw)+'<sheetData>'+rows2.join('')+'</sheetData>'+tail2+pgL+'</worksheet>';
+  // -- Sheet 3: Detail Harian --
+  var rows3=[],r3=0;
+  rows3.push(xlsRow(++r3,[{v:'NO',s:4},{v:'TANGGAL',s:4},{v:'KONTRAK',s:4},{v:'NO. UNIT',s:4},{v:'STATUS',s:4},{v:'TUJUAN',s:4}]));
+  db.laporan.filter(function(l){return l.tanggal.slice(0,7)===ym}).sort(function(a,b){
+    return a.tanggal===b.tanggal?(a.kontrak===b.kontrak?a.unit.localeCompare(b.unit):a.kontrak.localeCompare(b.kontrak)):a.tanggal.localeCompare(b.tanggal);
+  }).forEach(function(l,i){
+    rows3.push(xlsRow(++r3,[{v:String(i+1),s:10},{v:fmtTgl(l.tanggal),s:10},{v:'KONTRAK '+l.kontrak+' — '+KONTRAK[l.kontrak].nama,s:10},{v:l.unit,s:23},{v:l.status,s:xlsStXf(l.status)},{v:l.tujuan,s:10}]));
+  });
+  var ws3=H+'<worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"><sheetPr><pageSetUpPr fitToPage="1"/></sheetPr><sheetViews><sheetView workbookViewId="0"><pane ySplit="1" topLeftCell="A2" activePane="bottomLeft" state="frozen"/></sheetView></sheetViews>'+xlsCols([6,12,30,15,20,30])+'<sheetData>'+rows3.join('')+'</sheetData>'+(r3>1?'<autoFilter ref="A1:F'+r3+'"/>':'')+pgP+'</worksheet>';
+  var wb=H+'<workbook xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"><sheets><sheet name="Rekap per Unit" sheetId="1" r:id="rId1"/><sheet name="Kalender Bulanan" sheetId="2" r:id="rId2"/><sheet name="Detail Harian" sheetId="3" r:id="rId3"/></sheets></workbook>';
+  var wbr=H+'<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="worksheets/sheet1.xml"/><Relationship Id="rId2" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="worksheets/sheet2.xml"/><Relationship Id="rId3" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="worksheets/sheet3.xml"/><Relationship Id="rId4" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/></Relationships>';
+  var ct=H+'<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Override PartName="/xl/workbook.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml"/><Override PartName="/xl/worksheets/sheet1.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/><Override PartName="/xl/worksheets/sheet2.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/><Override PartName="/xl/worksheets/sheet3.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/><Override PartName="/xl/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.styles+xml"/></Types>';
+  var rels=H+'<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="xl/workbook.xml"/></Relationships>';
+  return xlsZip([
+    {name:'[Content_Types].xml',data:ct},
+    {name:'_rels/.rels',data:rels},
+    {name:'xl/workbook.xml',data:wb},
+    {name:'xl/_rels/workbook.xml.rels',data:wbr},
+    {name:'xl/styles.xml',data:xlsStyles()},
+    {name:'xl/worksheets/sheet1.xml',data:ws1},
+    {name:'xl/worksheets/sheet2.xml',data:ws2},
+    {name:'xl/worksheets/sheet3.xml',data:ws3}
+  ]);
+}
+function downloadBulanXlsx(){
+  var rows=bulanRows(bulanYm),st=bulanCount(rows,bulanYm);
+  if(!st.total){toast('⚠ Belum ada laporan pada bulan '+bulanLabel(bulanYm)+'.');return}
+  try{
+    var u8=buildBulanXlsx(bulanYm);
+    var blob=new Blob([u8],{type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'});
+    var a=document.createElement('a');
+    a.href=URL.createObjectURL(blob);a.download='laporan-bulanan-unit-'+bulanYm+'.xlsx';
+    document.body.appendChild(a);a.click();a.remove();
+    setTimeout(function(){URL.revokeObjectURL(a.href)},3000);
+    toast('⬇️ Excel bulanan diunduh — Rekap per Unit · Kalender Bulanan · Detail Harian.');
+  }catch(e){toast('⚠ Gagal membuat file Excel: '+e.message)}
+}
+function buildBulanMsg(ym,rows,st){
+  var m='*LAPORAN BULANAN UNIT SINAR MAJU JAYA*\n_THE UNI VENUS SERANG BANTEN_\n*Periode: '+bulanLabel(ym).toUpperCase()+'*';
+  m+='\n\n```\n Unit tercatat : '+rows.length+' unit\n Total laporan : '+st.total+'\n```';
+  var kc={A:0,B:0,C:0,D:0};
+  db.laporan.forEach(function(l){if(l.tanggal.slice(0,7)===ym&&kc[l.kontrak]!=null)kc[l.kontrak]++});
+  m+='\n\n'+['A','B','C','D'].map(function(k){return '▪ Kontrak '+k+' — '+KONTRAK[k].short+' : '+kc[k]}).join('\n');
+  m+='\n\n📎 Rekap lengkap per no. pol ada di file Excel terlampir.';
+  return m;
+}
+function sendBulanWa(){
+  var rows=bulanRows(bulanYm),st=bulanCount(rows,bulanYm);
+  if(!st.total){toast('⚠ Belum ada laporan pada bulan '+bulanLabel(bulanYm)+'.');return}
+  try{shareXlsxWa(buildBulanXlsx(bulanYm),'laporan-bulanan-unit-'+bulanYm+'.xlsx',buildBulanMsg(bulanYm,rows,st))}
+  catch(e){toast('⚠ Gagal membuat file Excel: '+e.message)}
+}
+function renderBulan(){
+  var rows=bulanRows(bulanYm),st=bulanCount(rows,bulanYm);
+  el('bulanInfo').innerHTML='Menampilkan <b>'+rows.length+'</b> unit · <b>'+st.total+'</b> laporan — <b>'+bulanLabel(bulanYm)+'</b>';
+  if(!rows.length||!st.total){
+    el('bulanPrev').innerHTML='<div class="empty">Belum ada laporan pada bulan '+bulanLabel(bulanYm)+' — pilih bulan lain di atas, atau input laporan dulu di tab 📋 Input Laporan.</div>';
+    return;
+  }
+  var h='<div class="table-wrap"><table><thead><tr><th style="width:40px">No</th><th>Kontrak</th><th>No. Pol / Unit</th><th style="text-align:center">Kirim</th><th style="text-align:center">Inap</th><th style="text-align:center">Standby</th><th style="text-align:center">Storing</th><th style="text-align:center">Total</th></tr></thead><tbody>';
+  rows.forEach(function(r,i){
+    var x=st.cnt[r.unit.toUpperCase()]||{},n=0;
+    BSTATUS.forEach(function(s){n+=x[s]||0});
+    h+='<tr><td class="mono">'+(i+1)+'</td><td><span class="badge" style="background:'+KBBG[r.kontrak]+';color:'+KBCOL[r.kontrak]+'">'+r.kontrak+'</span></td><td class="unit">'+esc(r.unit)+'</td>'+
+      '<td class="mono" style="text-align:center">'+(x['Kirim']||0)+'</td>'+
+      '<td class="mono" style="text-align:center">'+(x['Inap']||0)+'</td>'+
+      '<td class="mono" style="text-align:center">'+(x['Standby']||0)+'</td>'+
+      '<td class="mono" style="text-align:center">'+(x['Storing Perbaikan']||0)+'</td>'+
+      '<td class="mono" style="text-align:center"><b>'+n+'</b></td></tr>';
+  });
+  h+='</tbody></table></div>';
+  el('bulanPrev').innerHTML=h;
+}
+//BULAN-END
 //XLSX-END
 function submitLaporan(){
   var tgl=el('fTgl').value;
@@ -849,6 +1079,7 @@ function renderAll(){
   renderRekap();
   renderMasterTujuan();
   renderMasterUnit();
+  renderBulan();
   el('sampleBanner').hidden=!db.sample;
 }
 
@@ -877,6 +1108,10 @@ el('btnSendAll').addEventListener('click',function(){
 el('btnCopyAll').addEventListener('click',function(){copyText(buildAllMsg())});
 el('btnPng').addEventListener('click',downloadRekapPNG);
 el('btnXlsx').addEventListener('click',downloadRekapXlsx);
+el('btnXlsxWa').addEventListener('click',sendRekapXlsxWa);
+el('btnBulanXlsx').addEventListener('click',downloadBulanXlsx);
+el('btnBulanWa').addEventListener('click',sendBulanWa);
+el('mBulan').addEventListener('change',function(){if(this.value){bulanYm=this.value;renderBulan()}});
 el('btnTujuanAdd').addEventListener('click',addTujuan);
 el('btnTujuanCancel').addEventListener('click',function(){resetMasterForm('tujuan')});
 el('mTujuanNama').addEventListener('keydown',function(e){if(e.key==='Enter')addTujuan()});
@@ -909,10 +1144,11 @@ el('restoreFile').addEventListener('change',function(e){
 el('btnReset').addEventListener('click',resetAll);
 
 el('fTgl').value=todayISO();
+el('mBulan').value=bulanYm;
 el('mUnitKontrak').innerHTML=kontrakOptions(null);
 renderAll();
 renderWaSettings();
 showTab('input');
 </script>
 </body>
-        </html>
+  </html>
