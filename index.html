@@ -1,0 +1,722 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>LAPORAN HARIAN UNIT SINAR MAJU JAYA</title>
+<style>
+:root{--bg:#f1f5f9;--card:#fff;--ink:#0f172a;--muted:#64748b;--line:#e2e8f0;--navy:#1e3a8a;--blue:#1d4ed8;--wa:#16a34a;--danger:#dc2626}
+*{box-sizing:border-box}[hidden]{display:none!important}
+html,body{margin:0}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;background:var(--bg);color:var(--ink);font-size:14px;line-height:1.45}
+header.app{background:linear-gradient(120deg,#172554,#1e3a8a 55%,#2563eb);color:#fff;padding:20px 16px;text-align:center}
+header.app h1{margin:0;font-size:20px;letter-spacing:.04em}
+header.app .comp{margin:7px 0 0;font-size:12.5px;letter-spacing:.16em;opacity:.88;font-weight:600}
+nav.tabs{display:flex;gap:6px;padding:10px 14px;background:#fff;border-bottom:1px solid var(--line);overflow-x:auto;position:sticky;top:0;z-index:20}
+nav.tabs button{border:1px solid var(--line);background:#f8fafc;color:#334155;padding:8px 14px;border-radius:999px;font-size:13px;font-weight:600;cursor:pointer;white-space:nowrap}
+nav.tabs button.active{background:var(--navy);border-color:var(--navy);color:#fff}
+main{max-width:1100px;margin:0 auto;padding:16px 14px 40px}
+section.tab{display:none}
+section.tab.active{display:block}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px;margin-bottom:14px;box-shadow:0 1px 2px rgba(15,23,42,.04)}
+.card h2{margin:0 0 4px;font-size:16px}
+.card .sub{color:var(--muted);font-size:12.5px;margin:0 0 12px}
+.form-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px}
+label.f{font-size:12px;font-weight:700;color:#475569;display:block;margin-bottom:4px}
+select,input[type=text],input[type=date]{width:100%;padding:9px 10px;border:1px solid #cbd5e1;border-radius:8px;font-size:14px;background:#fff;color:var(--ink)}
+select:focus,input:focus{outline:2px solid #bfdbfe;border-color:#60a5fa}
+.actions{margin-top:12px;display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.btn{border:1px solid transparent;border-radius:8px;padding:9px 14px;font-size:13.5px;font-weight:600;cursor:pointer;white-space:nowrap}
+.btn.primary{background:var(--blue);color:#fff}
+.btn.wa{background:var(--wa);color:#fff}
+.btn.ghost{background:#fff;border-color:#cbd5e1;color:#334155}
+.btn.danger{background:#fff;border-color:#fecaca;color:var(--danger)}
+.btn.icon{padding:4px 9px;font-size:13px;background:#fff;border-color:#cbd5e1}
+.btn:active{transform:translateY(1px)}
+.hint{color:var(--muted);font-size:12.5px;margin:10px 0 0}
+.banner{background:#fefce8;border:1px solid #fde047;color:#713f12;border-radius:12px;padding:12px 14px;font-size:13px;margin-bottom:14px;line-height:1.55}
+.sum-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px}
+.sum-card{border:1px solid var(--line);border-left-width:4px;border-radius:10px;padding:10px 12px;background:#fff}
+.sum-k{font-size:11px;font-weight:700;color:var(--muted);letter-spacing:.04em}
+.sum-n{font-size:18px;font-weight:800;margin-top:2px}
+.sum-t{font-size:11px;color:var(--muted);margin-top:1px}
+.row-head{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap}
+.filters{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.filters select{width:auto;min-width:170px}
+#rekapInfo{font-size:12.5px;color:var(--muted);margin:6px 0 12px}
+.kontrak-card{border-left-width:5px}
+.kontrak-card.kb-A{border-left-color:#6366f1}.kontrak-card.kb-B{border-left-color:#14b8a6}.kontrak-card.kb-C{border-left-color:#f97316}.kontrak-card.kb-D{border-left-color:#a855f7}
+.kontrak-head{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+.kontrak-title{font-weight:800;font-size:14.5px}
+.kontrak-sub{font-size:12px;color:var(--muted);margin-top:2px}
+.row-btns{display:flex;gap:8px;flex-wrap:wrap}
+.msg-box{margin-top:12px}
+.msg-box pre{margin:0 0 8px;background:#f8fafc;border:1px solid var(--line);border-radius:10px;padding:12px;font-size:12.5px;white-space:pre-wrap;word-break:break-word;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
+.table-wrap{overflow-x:auto;margin-top:12px}
+table{width:100%;border-collapse:collapse;font-size:13.5px}
+th,td{border-bottom:1px solid var(--line);padding:8px 10px;text-align:left;vertical-align:middle}
+th{background:#f8fafc;font-size:11.5px;text-transform:uppercase;letter-spacing:.04em;color:#475569;white-space:nowrap}
+td .unit,td.unit{font-weight:700}
+.mono{font-variant-numeric:tabular-nums}
+.badge{display:inline-block;padding:3px 10px;border-radius:999px;font-size:12px;font-weight:700;white-space:nowrap}
+.st-inap{background:#dbeafe;color:#1d4ed8}.st-standby{background:#dcfce7;color:#15803d}.st-storing{background:#fee2e2;color:#b91c1c}
+.empty{color:var(--muted);text-align:center;padding:16px;font-size:13px}
+.add-inline{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:4px}
+.add-inline input[type=text]{flex:1 1 220px;width:auto}
+.add-inline select{flex:0 1 300px;width:auto}
+.toast{position:fixed;left:50%;bottom:18px;transform:translateX(-50%) translateY(8px);background:#0f172a;color:#fff;padding:10px 16px;border-radius:10px;font-size:13.5px;opacity:0;pointer-events:none;transition:.25s;z-index:60;max-width:90vw}
+.toast.show{opacity:1;transform:translateX(-50%)}
+footer.note{max-width:1100px;margin:0 auto;padding:0 14px 30px;color:var(--muted);font-size:12px}
+ol.steps{margin:0;padding-left:20px}
+ol.steps li{margin-bottom:8px}
+code{background:#f1f5f9;border:1px solid var(--line);border-radius:5px;padding:1px 6px;font-size:12.5px}
+@media (max-width:640px){select,input[type=text],input[type=date]{font-size:16px}}
+</style>
+</head>
+<body>
+
+<header class="app">
+  <h1>LAPORAN HARIAN UNIT SINAR MAJU JAYA</h1>
+  <p class="comp">THE UNI VENUS SERANG BANTEN</p>
+</header>
+
+<nav class="tabs" id="tabs">
+  <button class="active" data-tab="input">📋 Input Laporan</button>
+  <button data-tab="rekap">📤 Rekap &amp; Kirim WA</button>
+  <button data-tab="tujuan">📍 Master Tujuan</button>
+  <button data-tab="unit">🚛 Master Unit</button>
+  <button data-tab="panduan">📖 Panduan &amp; Setelan</button>
+</nav>
+
+<main>
+
+<section id="tab-input" class="tab active">
+  <div class="banner" id="sampleBanner" hidden>🧪 <b>Mode review:</b> aplikasi ini sengaja diisi <b>data contoh</b> supaya Anda bisa langsung melihat alurnya. Semua data contoh bisa dihapus lewat tab <b>📖 Panduan &amp; Setelan → Kosongkan Semua Data</b>, lalu isi master data yang sebenarnya.</div>
+  <div class="card">
+    <h2>Input Laporan Unit</h2>
+    <p class="sub">Isi baris berikut lalu klik <b>+ Tambah Laporan</b>. Laporan otomatis masuk ke tabel kontrak yang sesuai dengan unit-nya (dilihat di tab <b>📤 Rekap &amp; Kirim WA</b>).</p>
+    <div class="form-grid">
+      <div><label class="f" for="fTgl">Tanggal *</label><input type="date" id="fTgl"></div>
+      <div><label class="f" for="fUnit">No. Unit *</label><input type="text" id="fUnit" list="dlUnit" placeholder="Ketik / pilih no. unit" autocomplete="off"></div>
+      <div><label class="f" for="fKontrak">Kontrak *</label><select id="fKontrak"></select></div>
+      <div><label class="f" for="fStatus">Status *</label><select id="fStatus"></select></div>
+      <div><label class="f" for="fTujuan">Tujuan *</label><input type="text" id="fTujuan" list="dlTujuan" placeholder="Ketik / pilih tujuan" autocomplete="off"></div>
+      <datalist id="dlUnit"></datalist>
+      <datalist id="dlTujuan"></datalist>
+    </div>
+    <div class="actions">
+      <button class="btn primary" id="btnAdd">+ Tambah Laporan</button>
+      <button class="btn ghost" id="btnCancelEdit" hidden>Batal Edit</button>
+    </div>
+    <p class="hint" id="fHint"></p>
+  </div>
+  <div class="card">
+    <h2>Ringkasan Tanggal <span id="sumTgl" class="mono"></span></h2>
+    <p class="sub">Jumlah laporan per kontrak untuk tanggal yang sedang dipilih di form.</p>
+    <div class="sum-grid" id="sumGrid"></div>
+  </div>
+</section>
+
+<section id="tab-rekap" class="tab">
+  <div class="card">
+    <div class="row-head">
+      <div>
+        <h2>Rekap &amp; Kirim WhatsApp</h2>
+        <p class="sub" style="margin-bottom:0">Semua kontrak (A–D) <b>digabung dalam satu pesan</b> — dikirim <b>sekali</b>.</p>
+      </div>
+      <div class="filters">
+        <select id="rTgl" title="Filter tanggal"></select>
+        <button class="btn ghost" id="btnPng" title="Simpan rekap sebagai gambar PNG bergaya tabel Excel">🖼️ Unduh Gambar Tabel</button>
+        <button class="btn wa" id="btnSendAll">📤 Kirim WA Semua Kontrak</button>
+      </div>
+    </div>
+    <div id="rekapInfo"></div>
+    <div class="msg-box" id="allMsgBox">
+      <pre id="preAll"></pre>
+      <div class="row-btns">
+        <button class="btn ghost" id="btnCopyAll">📋 Salin Pesan</button>
+        <span class="hint" style="margin:0">Pratinjau pesan gaya struk — di WhatsApp: judul &amp; tanggal <b>tebal</b>, isi rata mono bergaris, plus emoji warna status (🟢 Standby · 🔵 Inap · 🔴 Storing).</span>
+      </div>
+    </div>
+  </div>
+  <div id="rekapWrap"></div>
+</section>
+
+<section id="tab-tujuan" class="tab">
+  <div class="card">
+    <h2>Master Tujuan</h2>
+    <p class="sub">Nama tujuan / customer / lokasi di sini akan muncul sebagai dropdown pada form input laporan.</p>
+    <div class="add-inline">
+      <input type="text" id="mTujuanNama" placeholder="Nama tujuan, contoh: Catur Sentosa Anugrah">
+      <button class="btn primary" id="btnTujuanAdd">+ Tambah</button>
+      <button class="btn ghost" id="btnTujuanCancel" hidden>Batal</button>
+    </div>
+    <div class="table-wrap"><table id="tTujuan"></table></div>
+  </div>
+</section>
+
+<section id="tab-unit" class="tab">
+  <div class="card">
+    <h2>Master Unit</h2>
+    <p class="sub">Petakan setiap no. unit ke kontraknya (A–D). Pemetaan inilah yang membuat laporan <b>otomatis masuk ke tabel kontrak yang benar</b> saat diinput.</p>
+    <div class="add-inline">
+      <input type="text" id="mUnitNo" placeholder="No. unit, contoh: B 9526 UPA">
+      <select id="mUnitKontrak"></select>
+      <button class="btn primary" id="btnUnitAdd">+ Tambah</button>
+      <button class="btn ghost" id="btnUnitCancel" hidden>Batal</button>
+    </div>
+    <div class="table-wrap"><table id="tUnit"></table></div>
+  </div>
+</section>
+
+<section id="tab-panduan" class="tab">
+  <div class="card">
+    <h2>Panduan Singkat</h2>
+    <ol class="steps">
+      <li><b>Siapkan master data</b> — isi <b>📍 Master Tujuan</b> dan <b>🚛 Master Unit</b> (pilih kontrak A–D untuk tiap unit). <b>Boleh dilewati:</b> bila master masih kosong, langsung ketik di form input — data baru otomatis tersimpan ke master.</li>
+      <li><b>Input harian</b> — di tab <b>📋 Input Laporan</b>: isi tanggal, ketik/pilih no. unit, pilih <b>kontrak di dropdown</b> (otomatis terisi bila unit sudah dikenal), pilih status (<b>Inap / Standby / Storing Perbaikan</b>), dan ketik/pilih tujuan, lalu klik <b>+ Tambah Laporan</b>.</li>
+      <li><b>Cek rekap</b> — di tab <b>📤 Rekap &amp; Kirim WA</b> pilih tanggal; tabel Kontrak A, B, C, D terisi otomatis.</li>
+      <li><b>Kirim WhatsApp</b> — di tab <b>📤 Rekap &amp; Kirim WA</b> klik <b>📤 Kirim WA Semua Kontrak</b>: kontrak A, B, C, D digabung menjadi <b>satu pesan</b> dan terkirim sekali. Pesan berformat <b>struk</b> — rata mono bergaris dengan emoji warna status. Nomor tujuan diatur di bawah; bila kosong, Anda tinggal memilih kontak saat WhatsApp terbuka.</li>
+      <li><b>Unduh gambar tabel</b> — di tab <b>📤 Rekap &amp; Kirim WA</b> klik <b>🖼️ Unduh Gambar Tabel</b> untuk menyimpan rekap sebagai <b>gambar PNG</b> bergaya tabel Excel (bergaris dan berwarna per kontrak) — praktis dilampirkan ke WhatsApp.</li>
+      <li><b>Kalau popup WA tidak muncul</b> — izinkan popup di browser, atau pakai tombol <b>📋 Salin Pesan</b> lalu tempel manual ke WhatsApp.</li>
+    </ol>
+  </div>
+  <div class="card">
+    <h2>Nomor WhatsApp Tujuan</h2>
+    <p class="sub">Format: <code>62812xxxxxxx</code> (awali 62, tanpa spasi / tanda +). Bila dikosongkan, WhatsApp akan terbuka tanpa nomor dan Anda memilih kontak sendiri.</p>
+    <div class="form-grid">
+      <div><label class="f">Nomor tujuan — laporan gabungan semua kontrak</label><input type="text" id="wa-admin" placeholder="62..."></div>
+    </div>
+    <div class="actions"><button class="btn primary" id="btnSaveWa">💾 Simpan Nomor</button></div>
+  </div>
+  <div class="card">
+    <h2>Backup &amp; Data</h2>
+    <p class="sub">Halaman ini statis (tanpa server) dan menyimpan data di penyimpanan browser perangkat ini (localStorage). Lakukan backup rutin, terutama sebelum menghapus data browser atau ganti perangkat.</p>
+    <div class="actions">
+      <button class="btn ghost" id="btnBackup">⬇️ Unduh Backup (.json)</button>
+      <button class="btn ghost" id="btnRestore">⬆️ Pulihkan Backup</button>
+      <input type="file" id="restoreFile" accept=".json,application/json" hidden>
+      <button class="btn danger" id="btnReset">🗑️ Kosongkan Semua Data</button>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer class="note">Aplikasi Laporan Harian Unit — SINAR MAJU JAYA · THE UNI VENUS SERANG BANTEN. Halaman statis HTML tunggal (tanpa server); data tersimpan otomatis di browser perangkat ini.</footer>
+<div class="toast" id="toast"></div>
+
+<script>
+"use strict";
+var LS_KEY='laporanUnit.v1';
+var KONTRAK={
+  A:{nama:'KONTRAK MIL (WING BOX)',short:'MIL (WING BOX)'},
+  B:{nama:'KONTRAK MIL (FUSO LONG)',short:'MIL (FUSO LONG)'},
+  C:{nama:'KONTRAK SDD1 (WING BOX)',short:'SDD1 (WING BOX)'},
+  D:{nama:'KONTRAK SDD2 (CDD & CDE)',short:'SDD2 (CDD & CDE)'}
+};
+var KKEYS=['A','B','C','D'];
+var STATUS=['Inap','Standby','Storing Perbaikan'];
+var KB={A:'#6366f1',B:'#14b8a6',C:'#f97316',D:'#a855f7'};
+var KBBG={A:'#e0e7ff',B:'#ccfbf1',C:'#ffedd5',D:'#f3e8ff'};
+var KBCOL={A:'#3730a3',B:'#0f766e',C:'#c2410c',D:'#7e22ce'};
+function el(id){return document.getElementById(id)}
+function stClass(s){return s==='Inap'?'st-inap':(s==='Standby'?'st-standby':'st-storing')}
+
+function load(){try{var raw=localStorage.getItem(LS_KEY);if(!raw)return null;var d=JSON.parse(raw);if(!d||!Array.isArray(d.laporan)||!Array.isArray(d.unit))return null;if(!d.wa)d.wa={a:'',b:'',c:'',d:'',admin:''};return d}catch(e){return null}}
+function blank(){return{tujuan:[],unit:[],laporan:[],wa:{a:'',b:'',c:'',d:'',admin:''},sample:false}}
+function uid(){return Date.now().toString(36)+Math.random().toString(36).slice(2,8)}
+function save(){localStorage.setItem(LS_KEY,JSON.stringify(db))}
+function pad(n){return String(n).padStart(2,'0')}
+function todayISO(){var d=new Date();return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate())}
+function fmtTgl(iso){if(!iso)return'';var p=iso.split('-');return p[2]+'/'+p[1]+'/'+p[0]}
+function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})}
+function toast(m){var t=el('toast');t.textContent=m;t.classList.add('show');clearTimeout(toast._h);toast._h=setTimeout(function(){t.classList.remove('show')},2600)}
+function latestDate(){if(!db.laporan.length)return todayISO();return db.laporan.map(function(l){return l.tanggal}).sort().reverse()[0]}
+
+function seed(){
+  var d=blank();d.sample=true;
+  d.tujuan=['Catur Sentosa Anugrah','CSA Gudang Cikarang','Depot Cibitung','Workshop Cakung'].map(function(n){return{id:uid(),nama:n}});
+  d.unit=[['B 9526 UPA','A'],['B 9031 UKZ','B'],['B 9445 TYA','C'],['B 9218 USD','D'],['B 9220 USD','D']].map(function(u){return{id:uid(),unit:u[0],kontrak:u[1]}});
+  d.laporan=[
+    {id:uid(),tanggal:'2026-10-05',unit:'B 9526 UPA',kontrak:'A',status:'Inap',tujuan:'Catur Sentosa Anugrah'},
+    {id:uid(),tanggal:'2026-10-05',unit:'B 9031 UKZ',kontrak:'B',status:'Standby',tujuan:'Depot Cibitung'},
+    {id:uid(),tanggal:'2026-10-05',unit:'B 9445 TYA',kontrak:'C',status:'Inap',tujuan:'CSA Gudang Cikarang'},
+    {id:uid(),tanggal:'2026-10-05',unit:'B 9218 USD',kontrak:'D',status:'Storing Perbaikan',tujuan:'Workshop Cakung'}
+  ];
+  localStorage.setItem(LS_KEY,JSON.stringify(d));
+  return d;
+}
+
+var db=load()||seed();
+var editingId=null;
+var rekapDate=latestDate();
+var editTujuanId=null,editUnitId=null;
+
+function showTab(name){
+  document.querySelectorAll('section.tab').forEach(function(s){s.classList.toggle('active',s.id==='tab-'+name)});
+  document.querySelectorAll('nav.tabs button').forEach(function(b){b.classList.toggle('active',b.dataset.tab===name)});
+}
+
+function fillSelect(sel,items,ph){
+  var cur=sel.value;sel.innerHTML='';
+  if(ph){var o0=document.createElement('option');o0.value='';o0.textContent=ph;sel.appendChild(o0);}
+  items.forEach(function(it){var o=document.createElement('option');o.value=it.v;o.textContent=it.t;sel.appendChild(o);});
+  var has=[].some.call(sel.options,function(o){return o.value===cur});
+  if(has)sel.value=cur;
+}
+
+function kontrakOptions(ph){
+  return (ph?'<option value="">'+ph+'</option>':'')+KKEYS.map(function(k){return '<option value="'+k+'">'+k+' — '+esc(KONTRAK[k].nama)+'</option>'}).join('');
+}
+function updateKontrakSel(){
+  var s=el('fKontrak'),no=el('fUnit').value.trim();
+  if(!no){s.value='';s.dataset.manual='';s.dataset.prev='';return}
+  var u=db.unit.find(function(x){return x.unit.toLowerCase()===no.toLowerCase()});
+  if(u){s.value=u.kontrak;s.dataset.manual='';s.dataset.prev='1'}
+  else if(s.dataset.prev==='1'&&!s.dataset.manual){s.value='';}
+  else s.dataset.prev='';
+}
+
+function fillDatalist(id,arr){el(id).innerHTML=arr.map(function(v){return '<option value="'+esc(v)+'"></option>'}).join('')}
+function renderInputForm(){
+  fillDatalist('dlUnit',db.unit.slice().sort(function(a,b){return a.unit.localeCompare(b.unit)}).map(function(u){return u.unit}));
+  fillDatalist('dlTujuan',db.tujuan.map(function(t){return t.nama}));
+  el('fKontrak').innerHTML=kontrakOptions('— Pilih kontrak —');
+  fillSelect(el('fStatus'),STATUS.map(function(s){return{v:s,t:s}}),null);
+  var h=el('fHint');
+  if(!db.unit.length&&!db.tujuan.length)h.textContent='⚡ Master unit & tujuan masih kosong — ketik no. unit, pilih kontraknya di dropdown, dan ketik nama tujuan langsung di form ini. Semuanya OTOMATIS tersimpan ke master.';
+  else if(!db.unit.length)h.textContent='⚡ Belum ada unit di master — ketik langsung no. unit, pilih kontrak di dropdown, lalu simpan: unit otomatis masuk Master Unit.';
+  else if(!db.tujuan.length)h.textContent='⚡ Belum ada tujuan di master — ketik langsung nama tujuan; otomatis masuk Master Tujuan.';
+  else h.textContent='Tip: klik kolom unit/tujuan untuk memilih dari daftar, atau ketik yang baru — data baru otomatis masuk master.';
+}
+
+function renderSummary(){
+  var tgl=el('fTgl').value;
+  el('sumTgl').textContent=tgl?('· '+fmtTgl(tgl)):'';
+  var total=0;
+  var html=KKEYS.map(function(k){
+    var n=db.laporan.filter(function(l){return l.tanggal===tgl&&l.kontrak===k}).length;total+=n;
+    return '<div class="sum-card" style="border-left-color:'+KB[k]+'"><div class="sum-k">KONTRAK '+k+'</div><div class="sum-n">'+n+' unit</div><div class="sum-t">'+esc(KONTRAK[k].short)+'</div></div>';
+  }).join('');
+  html+='<div class="sum-card" style="border-left-color:#334155"><div class="sum-k">TOTAL</div><div class="sum-n">'+total+' unit</div><div class="sum-t">semua kontrak</div></div>';
+  el('sumGrid').innerHTML=html;
+}
+
+function filteredRows(k){
+  return db.laporan.filter(function(l){return l.kontrak===k&&(rekapDate==='ALL'||l.tanggal===rekapDate)})
+    .slice().sort(function(a,b){return b.tanggal.localeCompare(a.tanggal)});
+}
+
+function renderRekap(){
+  var sel=el('rTgl');
+  var dates=[];db.laporan.forEach(function(l){if(dates.indexOf(l.tanggal)<0)dates.push(l.tanggal)});
+  dates.sort();dates.reverse();
+  var cur=rekapDate;
+  sel.innerHTML='<option value="ALL">Semua Tanggal</option>'+dates.map(function(d){return '<option value="'+d+'">'+fmtTgl(d)+'</option>'}).join('');
+  var has=[].some.call(sel.options,function(o){return o.value===cur});
+  rekapDate=has?cur:(dates[0]||'ALL');
+  sel.value=rekapDate;
+  var total=db.laporan.filter(function(l){return rekapDate==='ALL'||l.tanggal===rekapDate}).length;
+  el('rekapInfo').innerHTML='Menampilkan <b>'+total+'</b> laporan — '+(rekapDate==='ALL'?'semua tanggal':'tanggal <b>'+fmtTgl(rekapDate)+'</b>');
+  var wrap=el('rekapWrap');wrap.innerHTML='';
+  KKEYS.forEach(function(k){
+    var rows=filteredRows(k);
+    var card=document.createElement('div');
+    card.className='card kontrak-card kb-'+k;
+    var h='<div class="kontrak-head"><div><div class="kontrak-title">'+k+'. '+esc(KONTRAK[k].nama)+'</div><div class="kontrak-sub">'+rows.length+' laporan</div></div></div>';
+    if(rows.length){
+      h+='<div class="table-wrap"><table><thead><tr><th style="width:44px">No</th><th>Tanggal</th><th>No. Unit</th><th>Status</th><th>Tujuan</th><th style="width:96px">Aksi</th></tr></thead><tbody>';
+      rows.forEach(function(r,i){
+        h+='<tr><td class="mono">'+(i+1)+'</td><td class="mono">'+fmtTgl(r.tanggal)+'</td><td class="unit">'+esc(r.unit)+'</td>'+
+           '<td><span class="badge '+stClass(r.status)+'">'+esc(r.status)+'</span></td><td>'+esc(r.tujuan)+'</td>'+
+           '<td><button class="btn icon" data-act="edit" data-id="'+r.id+'" title="Edit">✎</button> <button class="btn icon" data-act="del" data-id="'+r.id+'" title="Hapus">🗑</button></td></tr>';
+      });
+      h+='</tbody></table></div>';
+    }else{
+      h+='<div class="empty">Belum ada laporan untuk kontrak ini pada filter tanggal saat ini.<br>Input lewat tab <b>📋 Input Laporan</b>.</div>';
+    }
+    card.innerHTML=h;
+    wrap.appendChild(card);
+  });
+  el('preAll').innerHTML=waRender(buildAllMsg());
+}
+
+function statusEmoji(s){
+  var t=String(s||'').toLowerCase();
+  if(t.indexOf('standby')>=0)return '🟢';
+  if(t.indexOf('inap')>=0)return '🔵';
+  if(t.indexOf('storing')>=0||t.indexOf('perbaikan')>=0||t.indexOf('servis')>=0)return '🔴';
+  return '🟡';
+}
+function rep(c,n){return new Array(n+1).join(c)}
+function wrapWords(s,w){
+  var words=String(s).split(' '),out=[],cur='';
+  words.forEach(function(x){
+    if(!cur){cur=x;return}
+    if((cur+' '+x).length<=w)cur+=' '+x;else{out.push(cur);cur=x}
+  });
+  if(cur)out.push(cur);
+  return out.length?out:[''];
+}
+function strukRow(r,i){
+  var L=[];
+  L.push(' '+(i+1)+'. '+(rekapDate==='ALL'?fmtTgl(r.tanggal)+' · ':'')+r.unit);
+  L.push('    '+statusEmoji(r.status)+' '+r.status);
+  wrapWords(r.tujuan,22).forEach(function(t,j){L.push((j?'      ':'    ➜ ')+t)});
+  return L.join('\n');
+}
+function buildAllMsg(){
+  var bar2=rep('═',28),bar1=rep('─',28),secs=[],total=0,used=[];
+  KKEYS.forEach(function(k){
+    var rows=filteredRows(k);total+=rows.length;
+    rows.forEach(function(r){if(used.indexOf(r.status)<0)used.push(r.status)});
+    var body=rows.length?rows.map(function(r,i){return strukRow(r,i)}).join('\n'+bar1+'\n'):' (belum ada laporan)';
+    secs.push(bar2+'\n '+wrapWords(k+'. '+KONTRAK[k].nama,27).join('\n ')+'\n'+bar2+'\n'+body);
+  });
+  var head='*LAPORAN HARIAN UNIT SINAR MAJU JAYA*\n_THE UNI VENUS SERANG BANTEN_';
+  if(rekapDate!=='ALL')head+='\n*Tanggal: '+fmtTgl(rekapDate)+'*';
+  var msg=head+'\n\n```\n'+secs.join('\n\n')+'\n'+bar2+'\n TOTAL UNIT : '+total+'\n'+bar2+'\n```';
+  if(used.length)msg+='\n\n'+used.map(function(s){return statusEmoji(s)+' '+s}).join(' · ');
+  return msg;
+}
+function waRender(msg){
+  var s=msg.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  s=s.split('```').join('');
+  return s.replace(/\*([^*\n]+)\*/g,'<b>$1</b>').replace(/_([^_\n]+)_/g,'<i>$1</i>');
+}
+function normalizePhone(x){
+  var d=String(x||'').replace(/\D/g,'');
+  if(!d)return'';
+  if(d.charAt(0)==='0')d='62'+d.slice(1);
+  return d;
+}
+function openWa(msg,phone){
+  var p=normalizePhone(phone);
+  var url=p?('https://wa.me/'+p+'?text='+encodeURIComponent(msg)):('https://wa.me/?text='+encodeURIComponent(msg));
+  var w=window.open(url,'_blank');
+  if(!w)toast('⚠ Popup diblokir browser — izinkan popup, atau gunakan tombol “📋 Salin Pesan”.');
+  else toast(p?'Membuka WhatsApp…':'ℹ Nomor tujuan belum diatur — pilih kontak di WhatsApp (atur di tab 📖 Panduan & Setelan).');
+}
+function copyText(txt){
+  function fb(){var ta=document.createElement('textarea');ta.value=txt;document.body.appendChild(ta);ta.select();var ok=false;try{ok=document.execCommand('copy')}catch(e){}ta.remove();toast(ok?'📋 Pesan disalin — tempel di WhatsApp.':'⚠ Gagal menyalin — salin manual dari kotak pesan.');}
+  if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(txt).then(function(){toast('📋 Pesan disalin — tempel di WhatsApp.')},fb);}
+  else fb();
+}
+function downloadRekapPNG(){
+  var secs=KKEYS.map(function(k){return{k:k,rows:filteredRows(k)}});
+  var total=0;secs.forEach(function(s){total+=s.rows.length});
+  if(!total){toast('⚠ Belum ada laporan pada filter tanggal ini.');return}
+  var W=1060,PAD=18,SCALE=2,TOP=86,cellP=8;
+  var cols=[{t:'NO',w:52},{t:'TANGGAL',w:104},{t:'NO. UNIT',w:150},{t:'STATUS',w:158},{t:'TUJUAN',w:0}];
+  cols[4].w=W-PAD*2-cols[0].w-cols[1].w-cols[2].w-cols[3].w;
+  var STCOL={'Inap':'#1d4ed8','Standby':'#15803d','Storing Perbaikan':'#b91c1c'};
+  var cv=document.createElement('canvas'),ctx=cv.getContext('2d');
+  function fnt(b,sz,it){return (b?'bold ':'')+(it?'italic ':'')+sz+'px Arial, "Segoe UI", sans-serif'}
+  ctx.font=fnt(0,13);
+  function wrap(s,w){var ws=String(s).split(' '),out=[],cur='';ws.forEach(function(x){if(!cur){cur=x;return}if(ctx.measureText(cur+' '+x).width<=w)cur+=' '+x;else{out.push(cur);cur=x}});if(cur)out.push(cur);return out.length?out:['']}
+  var items=[{t:'cols',h:32}];
+  secs.forEach(function(s){
+    items.push({t:'sec',k:s.k,n:s.rows.length,h:34});
+    if(!s.rows.length)items.push({t:'empty',h:30});
+    else s.rows.forEach(function(r){
+      var lines=wrap(r.tujuan,cols[4].w-2*cellP);
+      items.push({t:'row',r:r,lines:lines,h:Math.max(30,lines.length*17+13)});
+    });
+  });
+  items.push({t:'total',n:total,h:38});
+  var H=TOP+16;items.forEach(function(it){H+=it.h});
+  cv.width=W*SCALE;cv.height=H*SCALE;
+  ctx.scale(SCALE,SCALE);
+  ctx.fillStyle='#ffffff';ctx.fillRect(0,0,W,H);
+  ctx.textBaseline='middle';
+  ctx.textAlign='center';
+  ctx.fillStyle='#1e3a8a';ctx.font=fnt(1,20);ctx.fillText('LAPORAN HARIAN UNIT SINAR MAJU JAYA',W/2,26);
+  ctx.fillStyle='#64748b';ctx.font=fnt(0,12.5);ctx.fillText('THE UNI VENUS SERANG BANTEN',W/2,45);
+  ctx.fillStyle='#475569';ctx.font=fnt(0,13);
+  ctx.fillText((rekapDate==='ALL'?'Semua Tanggal':'Tanggal: '+fmtTgl(rekapDate))+'   ·   Kontrak A · B · C · D   ·   '+total+' unit',W/2,68);
+  ctx.textAlign='left';
+  var x0=PAD,x1=W-PAD,y0=TOP,y=y0,yEnd=y0,dr=0;
+  function colX(ci){var x=x0,i;for(i=0;i<ci;i++)x+=cols[i].w;return x}
+  var rowYs=[y0];
+  items.forEach(function(it){
+    if(it.t==='cols'){
+      ctx.fillStyle='#e2e8f0';ctx.fillRect(x0,y,x1-x0,it.h);
+      ctx.fillStyle='#475569';ctx.font=fnt(1,11.5);
+      cols.forEach(function(c,ci2){ctx.fillText(c.t,colX(ci2)+cellP,y+it.h/2)});
+    }else if(it.t==='sec'){
+      ctx.fillStyle=KBBG[it.k];ctx.fillRect(x0,y,x1-x0,it.h);
+      ctx.fillStyle=KBCOL[it.k];ctx.font=fnt(1,13.5);
+      ctx.fillText('KONTRAK '+it.k+' — '+KONTRAK[it.k].nama,x0+cellP,y+it.h/2);
+      ctx.font=fnt(0,12);
+      var nm=it.n+' laporan';
+      ctx.fillText(nm,x1-cellP-ctx.measureText(nm).width,y+it.h/2);
+    }else if(it.t==='empty'){
+      ctx.fillStyle='#f8fafc';ctx.fillRect(x0,y,x1-x0,it.h);
+      ctx.fillStyle='#94a3b8';ctx.font=fnt(0,12.5,1);
+      ctx.fillText('( belum ada laporan )',x0+cellP,y+it.h/2);
+    }else if(it.t==='row'){
+      var r=it.r;
+      if(dr%2===1){ctx.fillStyle='#f8fafc';ctx.fillRect(x0,y,x1-x0,it.h)}
+      ctx.fillStyle='#64748b';ctx.font=fnt(0,13);ctx.fillText(String(dr+1),colX(0)+cellP,y+it.h/2);
+      ctx.fillStyle='#334155';ctx.fillText(fmtTgl(r.tanggal),colX(1)+cellP,y+it.h/2);
+      ctx.fillStyle='#0f172a';ctx.font=fnt(1,13.5);ctx.fillText(r.unit,colX(2)+cellP,y+it.h/2);
+      ctx.fillStyle=STCOL[r.status]||'#b45309';ctx.font=fnt(1,12.5);ctx.fillText(r.status,colX(3)+cellP,y+it.h/2);
+      ctx.fillStyle='#1e293b';ctx.font=fnt(0,13);
+      var lh=17,yb=y+it.h/2-((it.lines.length-1)*lh)/2;
+      it.lines.forEach(function(ln,li){ctx.fillText(ln,colX(4)+cellP,yb+li*lh)});
+      dr++;
+    }else if(it.t==='total'){
+      ctx.fillStyle='#e2e8f0';ctx.fillRect(x0,y,x1-x0,it.h);
+      ctx.fillStyle='#0f172a';ctx.font=fnt(1,13.5);
+      ctx.fillText('TOTAL',x0+cellP,y+it.h/2);
+      var tv=it.n+' unit — semua kontrak';
+      ctx.fillText(tv,x1-cellP-ctx.measureText(tv).width,y+it.h/2);
+    }
+    y+=it.h;yEnd=y;rowYs.push(y);
+  });
+  ctx.strokeStyle='#94a3b8';ctx.lineWidth=1;
+  for(var ci=0;ci<=cols.length;ci++){var gx=(ci===cols.length)?x1:colX(ci);ctx.beginPath();ctx.moveTo(gx,y0);ctx.lineTo(gx,yEnd);ctx.stroke()}
+  rowYs.forEach(function(gy){ctx.beginPath();ctx.moveTo(x0,gy);ctx.lineTo(x1,gy);ctx.stroke()});
+  ctx.strokeStyle='#334155';ctx.lineWidth=2;ctx.strokeRect(x0,y0,x1-x0,yEnd-y0);
+  cv.toBlob(function(b){
+    if(!b){toast('⚠ Gagal membuat gambar.');return}
+    var a=document.createElement('a');
+    a.href=URL.createObjectURL(b);
+    a.download='rekap-laporan-unit-'+(rekapDate==='ALL'?'semua-tanggal':rekapDate)+'.png';
+    document.body.appendChild(a);a.click();a.remove();
+    setTimeout(function(){URL.revokeObjectURL(a.href)},3000);
+    toast('⬇️ Gambar tabel diunduh — bisa langsung dilampirkan ke WhatsApp.');
+  },'image/png');
+}
+function submitLaporan(){
+  var tgl=el('fTgl').value;
+  var unitNo=el('fUnit').value.trim();
+  var kSel=el('fKontrak').value;
+  var status=el('fStatus').value;
+  var tujuan=el('fTujuan').value.trim();
+  if(!tgl){toast('⚠ Isi tanggal dulu.');return}
+  if(!unitNo){toast('⚠ Ketik / pilih no. unit dulu.');return}
+  if(!kSel){toast('⚠ Pilih kontrak dulu di kolom Kontrak (A–D).');return}
+  var u=db.unit.find(function(x){return x.unit.toLowerCase()===unitNo.toLowerCase()});
+  if(!status){toast('⚠ Pilih status.');return}
+  if(!tujuan){toast('⚠ Ketik / pilih tujuan dulu.');return}
+  var tExist=db.tujuan.find(function(t){return t.nama.toLowerCase()===tujuan.toLowerCase()});
+  var baru=[],moved=false;
+  if(!u){u={id:uid(),unit:unitNo,kontrak:kSel};db.unit.push(u);baru.push('unit')}
+  else if(u.kontrak!==kSel){u.kontrak=kSel;moved=true}
+  if(!tExist){db.tujuan.push({id:uid(),nama:tujuan});baru.push('tujuan')}
+  else tujuan=tExist.nama;
+  var dup=db.laporan.find(function(l){return l.unit.toLowerCase()===u.unit.toLowerCase()&&l.tanggal===tgl&&l.id!==editingId});
+  if(dup&&!window.confirm('Unit '+u.unit+' sudah punya laporan pada '+fmtTgl(tgl)+'.\nTetap simpan laporan ini?'))return;
+  if(editingId){
+    var l=db.laporan.find(function(x){return x.id===editingId});
+    Object.assign(l,{tanggal:tgl,unitId:u.id,unit:u.unit,kontrak:u.kontrak,status:status,tujuan:tujuan});
+    resetEditMode();
+    toast('✓ Perubahan disimpan → Kontrak '+u.kontrak+'.');
+  }else{
+    db.laporan.push({id:uid(),tanggal:tgl,unitId:u.id,unit:u.unit,kontrak:u.kontrak,status:status,tujuan:tujuan});
+    el('fUnit').value='';el('fTujuan').value='';el('fKontrak').value='';el('fKontrak').dataset.manual='';
+    toast('✓ Tersimpan → Kontrak '+u.kontrak+' ('+KONTRAK[u.kontrak].short+')'+(baru.length?' · '+baru.join(' & ')+' baru otomatis masuk master':'')+(moved?' · pemetaan kontrak unit diperbarui':''));
+  }
+  rekapDate=tgl;
+  save();renderAll();
+}
+function resetEditMode(){
+  editingId=null;
+  el('btnAdd').textContent='+ Tambah Laporan';
+  el('btnCancelEdit').hidden=true;
+  el('fUnit').value='';el('fTujuan').value='';el('fKontrak').value='';el('fKontrak').dataset.manual='';
+  updateKontrakSel();
+}
+function editLaporan(id){
+  var l=db.laporan.find(function(x){return x.id===id});
+  if(!l)return;
+  editingId=id;showTab('input');
+  el('fTgl').value=l.tanggal;
+  el('fUnit').value=l.unit;
+  el('fKontrak').value=l.kontrak;
+  el('fKontrak').dataset.manual='1';
+  el('fStatus').value=l.status;
+  el('fTujuan').value=l.tujuan;
+  el('btnAdd').textContent='💾 Simpan Perubahan';
+  el('btnCancelEdit').hidden=false;
+  window.scrollTo({top:0,behavior:'smooth'});
+  toast('Mode edit — ubah data lalu klik Simpan Perubahan.');
+}
+function delLaporan(id){
+  if(!window.confirm('Hapus laporan ini?'))return;
+  db.laporan=db.laporan.filter(function(l){return l.id!==id});
+  save();renderAll();toast('Laporan dihapus.');
+}
+
+function renderMasterTujuan(){
+  var head='<thead><tr><th style="width:44px">No</th><th>Nama Tujuan</th><th style="width:100px">Aksi</th></tr></thead>';
+  var t=el('tTujuan');
+  if(!db.tujuan.length){t.innerHTML=head+'<tbody><tr><td colspan="3" class="empty">Belum ada data. Tambahkan lewat form di atas.</td></tr></tbody>';return}
+  t.innerHTML=head+'<tbody>'+db.tujuan.map(function(s,i){
+    return '<tr><td class="mono">'+(i+1)+'</td><td>'+esc(s.nama)+'</td><td><button class="btn icon" data-m="tujuan" data-act="medit" data-id="'+s.id+'">✎</button> <button class="btn icon" data-m="tujuan" data-act="mdel" data-id="'+s.id+'">🗑</button></td></tr>';
+  }).join('')+'</tbody>';
+}
+function renderMasterUnit(){
+  var head='<thead><tr><th style="width:44px">No</th><th>No. Unit</th><th>Kontrak</th><th style="width:100px">Aksi</th></tr></thead>';
+  var t=el('tUnit');
+  if(!db.unit.length){t.innerHTML=head+'<tbody><tr><td colspan="4" class="empty">Belum ada unit. Tambahkan lewat form di atas.</td></tr></tbody>';return}
+  t.innerHTML=head+'<tbody>'+db.unit.map(function(u,i){
+    return '<tr><td class="mono">'+(i+1)+'</td><td class="unit">'+esc(u.unit)+'</td>'+
+      '<td><span class="badge" style="background:'+KBBG[u.kontrak]+';color:'+KBCOL[u.kontrak]+'">'+u.kontrak+' · '+esc(KONTRAK[u.kontrak].short)+'</span></td>'+
+      '<td><button class="btn icon" data-m="unit" data-act="medit" data-id="'+u.id+'">✎</button> <button class="btn icon" data-m="unit" data-act="mdel" data-id="'+u.id+'">🗑</button></td></tr>';
+  }).join('')+'</tbody>';
+}
+function resetMasterForm(m){
+  if(m==='tujuan'){editTujuanId=null;el('mTujuanNama').value='';el('btnTujuanAdd').textContent='+ Tambah';el('btnTujuanCancel').hidden=true;}
+  if(m==='unit'){editUnitId=null;el('mUnitNo').value='';el('btnUnitAdd').textContent='+ Tambah';el('btnUnitCancel').hidden=true;}
+}
+function addTujuan(){
+  var v=el('mTujuanNama').value.trim();
+  if(!v){toast('⚠ Isi nama tujuan.');return}
+  if(editTujuanId){
+    var it=db.tujuan.find(function(x){return x.id===editTujuanId});
+    if(it)it.nama=v;
+    resetMasterForm('tujuan');toast('✓ Tujuan diubah.');
+  }else{
+    if(db.tujuan.some(function(s){return s.nama.toLowerCase()===v.toLowerCase()})){toast('⚠ Nama tujuan sudah ada.');return}
+    db.tujuan.push({id:uid(),nama:v});
+    el('mTujuanNama').value='';toast('✓ Tujuan ditambahkan.');
+  }
+  save();renderAll();
+}
+function addUnit(){
+  var v=el('mUnitNo').value.trim().toUpperCase();
+  var k=el('mUnitKontrak').value;
+  if(!v){toast('⚠ Isi no. unit.');return}
+  if(!k){toast('⚠ Pilih kontrak unit.');return}
+  if(editUnitId){
+    var it=db.unit.find(function(x){return x.id===editUnitId});
+    if(it){it.unit=v;it.kontrak=k;}
+    resetMasterForm('unit');toast('✓ Unit diubah.');
+  }else{
+    if(db.unit.some(function(s){return s.unit.toLowerCase()===v.toLowerCase()})){toast('⚠ No. unit sudah ada.');return}
+    db.unit.push({id:uid(),unit:v,kontrak:k});
+    el('mUnitNo').value='';toast('✓ Unit ditambahkan ke Kontrak '+k+'.');
+  }
+  save();renderAll();
+}
+function editMaster(m,id){
+  if(m==='tujuan'){var t=db.tujuan.find(function(x){return x.id===id});if(!t)return;editTujuanId=id;el('mTujuanNama').value=t.nama;el('btnTujuanAdd').textContent='💾 Simpan';el('btnTujuanCancel').hidden=false;el('mTujuanNama').focus();}
+  if(m==='unit'){var u=db.unit.find(function(x){return x.id===id});if(!u)return;editUnitId=id;el('mUnitNo').value=u.unit;el('mUnitKontrak').value=u.kontrak;el('btnUnitAdd').textContent='💾 Simpan';el('btnUnitCancel').hidden=false;el('mUnitNo').focus();}
+}
+function delMaster(m,id){
+  var list,used,label,field;
+  if(m==='tujuan'){list=db.tujuan;field='tujuan';label='tujuan';}
+  else{list=db.unit;field='unit';label='unit';}
+  var idx=list.findIndex(function(x){return x.id===id});
+  if(idx<0)return;
+  var it=list[idx];
+  var n;
+  if(m==='unit')n=db.laporan.filter(function(l){return l.unit===it.unit}).length;
+  else n=db.laporan.filter(function(l){return l[field]===it.nama}).length;
+  var msg='Hapus '+label+' “'+(m==='unit'?it.unit:it.nama)+'”?';
+  if(n)msg+='\nCatatan: dipakai di '+n+' laporan. Laporan lama tetap menyimpan data ini.';
+  if(!window.confirm(msg))return;
+  list.splice(idx,1);
+  save();renderAll();toast('Data '+label+' dihapus.');
+}
+
+function renderWaSettings(){
+  ['admin'].forEach(function(k){el('wa-'+k).value=db.wa[k]||''});
+}
+function saveWa(){
+  ['admin'].forEach(function(k){db.wa[k]=el('wa-'+k).value.trim()});
+  save();toast('✓ Nomor WhatsApp disimpan.');
+}
+function backupData(){
+  var blob=new Blob([JSON.stringify(db,null,2)],{type:'application/json'});
+  var a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);
+  a.download='backup-laporan-unit-'+todayISO()+'.json';
+  document.body.appendChild(a);a.click();a.remove();
+  setTimeout(function(){URL.revokeObjectURL(a.href)},3000);
+  toast('⬇️ Backup diunduh.');
+}
+function resetAll(){
+  if(!window.confirm('Kosongkan SEMUA data (master tujuan, unit, dan seluruh laporan)?'))return;
+  if(!window.confirm('Yakin? Tindakan ini tidak bisa dibatalkan.'))return;
+  db=blank();save();
+  el('fTgl').value=todayISO();
+  rekapDate=todayISO();
+  renderAll();renderWaSettings();
+  toast('Semua data dikosongkan. Silakan isi master data Anda.');
+}
+function renderAll(){
+  renderInputForm();
+  renderSummary();
+  renderRekap();
+  renderMasterTujuan();
+  renderMasterUnit();
+  el('sampleBanner').hidden=!db.sample;
+}
+
+document.addEventListener('click',function(e){
+  var b=e.target.closest('button[data-act]');
+  if(!b)return;
+  var act=b.dataset.act;
+  if(act==='del')delLaporan(b.dataset.id);
+  else if(act==='edit')editLaporan(b.dataset.id);
+  else if(act==='mdel')delMaster(b.dataset.m,b.dataset.id);
+  else if(act==='medit')editMaster(b.dataset.m,b.dataset.id);
+});
+document.querySelectorAll('nav.tabs button').forEach(function(b){b.addEventListener('click',function(){showTab(b.dataset.tab)})});
+el('fUnit').addEventListener('input',updateKontrakSel);
+el('fUnit').addEventListener('change',updateKontrakSel);
+el('fKontrak').addEventListener('change',function(){this.dataset.manual='1'});
+el('fTgl').addEventListener('change',renderSummary);
+el('btnAdd').addEventListener('click',submitLaporan);
+el('btnCancelEdit').addEventListener('click',function(){resetEditMode();toast('Edit dibatalkan.')});
+el('rTgl').addEventListener('change',function(){rekapDate=el('rTgl').value;renderRekap()});
+el('btnSendAll').addEventListener('click',function(){
+  var n=db.laporan.filter(function(l){return rekapDate==='ALL'||l.tanggal===rekapDate}).length;
+  if(!n){toast('⚠ Belum ada laporan pada filter tanggal ini.');return}
+  openWa(buildAllMsg(),db.wa.admin);
+});
+el('btnCopyAll').addEventListener('click',function(){copyText(buildAllMsg())});
+el('btnPng').addEventListener('click',downloadRekapPNG);
+el('btnTujuanAdd').addEventListener('click',addTujuan);
+el('btnTujuanCancel').addEventListener('click',function(){resetMasterForm('tujuan')});
+el('mTujuanNama').addEventListener('keydown',function(e){if(e.key==='Enter')addTujuan()});
+el('btnUnitAdd').addEventListener('click',addUnit);
+el('btnUnitCancel').addEventListener('click',function(){resetMasterForm('unit')});
+el('mUnitNo').addEventListener('keydown',function(e){if(e.key==='Enter')addUnit()});
+el('btnSaveWa').addEventListener('click',saveWa);
+el('btnBackup').addEventListener('click',backupData);
+el('btnRestore').addEventListener('click',function(){el('restoreFile').click()});
+el('restoreFile').addEventListener('change',function(e){
+  var f=e.target.files[0];if(!f)return;
+  var rd=new FileReader();
+  rd.onload=function(){
+    try{
+      var d=JSON.parse(rd.result);
+      if(!d||!Array.isArray(d.laporan)||!Array.isArray(d.unit)||!Array.isArray(d.tujuan))throw new Error('format');
+      if(!window.confirm('Pulihkan data dari file?\nData saat ini akan diganti.'))return;
+      db=Object.assign(blank(),d);
+      if(!db.wa)db.wa={a:'',b:'',c:'',d:'',admin:''};
+      db.sample=false;
+      save();rekapDate=latestDate();
+      el('fTgl').value=todayISO();
+      renderAll();renderWaSettings();
+      toast('✓ Data berhasil dipulihkan.');
+    }catch(err){toast('⚠ File backup tidak valid.');}
+  };
+  rd.readAsText(f);
+  e.target.value='';
+});
+el('btnReset').addEventListener('click',resetAll);
+
+el('fTgl').value=todayISO();
+el('mUnitKontrak').innerHTML=kontrakOptions(null);
+renderAll();
+renderWaSettings();
+showTab('input');
+</script>
+</body>
+</html>
