@@ -59,7 +59,7 @@ th{background:#f8fafc;font-size:11.5px;text-transform:uppercase;letter-spacing:.
 td .unit,td.unit{font-weight:700}
 .mono{font-variant-numeric:tabular-nums}
 .badge{display:inline-block;padding:3px 10px;border-radius:999px;font-size:12px;font-weight:700;white-space:nowrap}
-.st-inap{background:#dbeafe;color:#1d4ed8}.st-standby{background:#dcfce7;color:#15803d}.st-storing{background:#fee2e2;color:#b91c1c}
+.st-kirim{background:#fef9c3;color:#a16207}.st-inap{background:#dbeafe;color:#1d4ed8}.st-standby{background:#dcfce7;color:#15803d}.st-storing{background:#fee2e2;color:#b91c1c}
 .empty{color:var(--muted);text-align:center;padding:16px;font-size:13px}
 .add-inline{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:4px}
 .add-inline input[type=text]{flex:1 1 220px;width:auto}
@@ -135,7 +135,7 @@ code{background:#f1f5f9;border:1px solid var(--line);border-radius:5px;padding:1
       <pre id="preAll"></pre>
       <div class="row-btns">
         <button class="btn ghost" id="btnCopyAll">📋 Salin Pesan</button>
-        <span class="hint" style="margin:0">Pratinjau pesan gaya struk — di WhatsApp: judul &amp; tanggal <b>tebal</b>, isi rata mono bergaris, plus emoji warna status (🟢 Standby · 🔵 Inap · 🔴 Storing).</span>
+        <span class="hint" style="margin:0">Pratinjau pesan gaya struk — di WhatsApp: judul &amp; tanggal <b>tebal</b>, isi rata mono bergaris, plus emoji warna status (🟡 Kirim · 🟢 Standby · 🔵 Inap · 🔴 Storing).</span>
       </div>
     </div>
   </div>
@@ -174,7 +174,7 @@ code{background:#f1f5f9;border:1px solid var(--line);border-radius:5px;padding:1
     <h2>Panduan Singkat</h2>
     <ol class="steps">
       <li><b>Siapkan master data</b> — isi <b>📍 Master Tujuan</b> dan <b>🚛 Master Unit</b> (pilih kontrak A–D untuk tiap unit). <b>Boleh dilewati:</b> bila master masih kosong, langsung ketik di form input — data baru otomatis tersimpan ke master.</li>
-      <li><b>Input harian</b> — di tab <b>📋 Input Laporan</b>: isi tanggal, ketik/pilih no. unit, pilih <b>kontrak di dropdown</b> (otomatis terisi bila unit sudah dikenal), pilih status (<b>Inap / Standby / Storing Perbaikan</b>), dan ketik/pilih tujuan, lalu klik <b>+ Tambah Laporan</b>.</li>
+      <li><b>Input harian</b> — di tab <b>📋 Input Laporan</b>: isi tanggal, ketik/pilih no. unit, pilih <b>kontrak di dropdown</b> (otomatis terisi bila unit sudah dikenal), pilih status (<b>Kirim / Inap / Standby / Storing Perbaikan</b>), dan ketik/pilih tujuan, lalu klik <b>+ Tambah Laporan</b>.</li>
       <li><b>Cek rekap</b> — di tab <b>📤 Rekap &amp; Kirim WA</b> pilih tanggal; tabel Kontrak A, B, C, D terisi otomatis.</li>
       <li><b>Kirim WhatsApp</b> — di tab <b>📤 Rekap &amp; Kirim WA</b> klik <b>📤 Kirim WA Semua Kontrak</b>: kontrak A, B, C, D digabung menjadi <b>satu pesan</b> dan terkirim sekali. Pesan berformat <b>struk</b> — rata mono bergaris dengan emoji warna status. Nomor tujuan diatur di bawah; bila kosong, Anda tinggal memilih kontak saat WhatsApp terbuka.</li>
       <li><b>Unduh gambar tabel</b> — di tab <b>📤 Rekap &amp; Kirim WA</b> klik <b>🖼️ Unduh Gambar Tabel</b> untuk menyimpan rekap sebagai <b>gambar PNG</b> bergaya tabel Excel (bergaris dan berwarna per kontrak) — praktis dilampirkan ke WhatsApp.</li>
@@ -216,12 +216,12 @@ var KONTRAK={
   D:{nama:'KONTRAK SDD2 (CDD & CDE)',short:'SDD2 (CDD & CDE)'}
 };
 var KKEYS=['A','B','C','D'];
-var STATUS=['Inap','Standby','Storing Perbaikan'];
+var STATUS=['Kirim','Inap','Standby','Storing Perbaikan'];
 var KB={A:'#6366f1',B:'#14b8a6',C:'#f97316',D:'#a855f7'};
 var KBBG={A:'#e0e7ff',B:'#ccfbf1',C:'#ffedd5',D:'#f3e8ff'};
 var KBCOL={A:'#3730a3',B:'#0f766e',C:'#c2410c',D:'#7e22ce'};
 function el(id){return document.getElementById(id)}
-function stClass(s){return s==='Inap'?'st-inap':(s==='Standby'?'st-standby':'st-storing')}
+function stClass(s){return s==='Kirim'?'st-kirim':(s==='Inap'?'st-inap':(s==='Standby'?'st-standby':'st-storing'))}
 
 function load(){try{var raw=localStorage.getItem(LS_KEY);if(!raw)return null;var d=JSON.parse(raw);if(!d||!Array.isArray(d.laporan)||!Array.isArray(d.unit))return null;if(!d.wa)d.wa={a:'',b:'',c:'',d:'',admin:''};return d}catch(e){return null}}
 function blank(){return{tujuan:[],unit:[],laporan:[],wa:{a:'',b:'',c:'',d:'',admin:''},sample:false}}
@@ -242,7 +242,8 @@ function seed(){
     {id:uid(),tanggal:'2026-10-05',unit:'B 9526 UPA',kontrak:'A',status:'Inap',tujuan:'Catur Sentosa Anugrah'},
     {id:uid(),tanggal:'2026-10-05',unit:'B 9031 UKZ',kontrak:'B',status:'Standby',tujuan:'Depot Cibitung'},
     {id:uid(),tanggal:'2026-10-05',unit:'B 9445 TYA',kontrak:'C',status:'Inap',tujuan:'CSA Gudang Cikarang'},
-    {id:uid(),tanggal:'2026-10-05',unit:'B 9218 USD',kontrak:'D',status:'Storing Perbaikan',tujuan:'Workshop Cakung'}
+    {id:uid(),tanggal:'2026-10-05',unit:'B 9218 USD',kontrak:'D',status:'Storing Perbaikan',tujuan:'Workshop Cakung'},
+    {id:uid(),tanggal:'2026-10-05',unit:'B 9220 USD',kontrak:'D',status:'Kirim',tujuan:'Depot Cibitung'}
   ];
   localStorage.setItem(LS_KEY,JSON.stringify(d));
   return d;
@@ -344,6 +345,7 @@ function renderRekap(){
 
 function statusEmoji(s){
   var t=String(s||'').toLowerCase();
+  if(t.indexOf('kirim')>=0)return '🟡';
   if(t.indexOf('standby')>=0)return '🟢';
   if(t.indexOf('inap')>=0)return '🔵';
   if(t.indexOf('storing')>=0||t.indexOf('perbaikan')>=0||t.indexOf('servis')>=0)return '🔴';
@@ -410,7 +412,7 @@ function downloadRekapPNG(){
   var W=1060,PAD=18,SCALE=2,TOP=86,cellP=8;
   var cols=[{t:'NO',w:52},{t:'TANGGAL',w:104},{t:'NO. UNIT',w:150},{t:'STATUS',w:158},{t:'TUJUAN',w:0}];
   cols[4].w=W-PAD*2-cols[0].w-cols[1].w-cols[2].w-cols[3].w;
-  var STCOL={'Inap':'#1d4ed8','Standby':'#15803d','Storing Perbaikan':'#b91c1c'};
+  var STCOL={'Kirim':'#a16207','Inap':'#1d4ed8','Standby':'#15803d','Storing Perbaikan':'#b91c1c'};
   var cv=document.createElement('canvas'),ctx=cv.getContext('2d');
   function fnt(b,sz,it){return (b?'bold ':'')+(it?'italic ':'')+sz+'px Arial, "Segoe UI", sans-serif'}
   ctx.font=fnt(0,13);
