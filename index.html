@@ -67,6 +67,9 @@ td .unit,td.unit{font-weight:700}
 .toast{position:fixed;left:50%;bottom:18px;transform:translateX(-50%) translateY(8px);background:#0f172a;color:#fff;padding:10px 16px;border-radius:10px;font-size:13.5px;opacity:0;pointer-events:none;transition:.25s;z-index:60;max-width:90vw}
 .toast.show{opacity:1;transform:translateX(-50%)}
 footer.note{max-width:1100px;margin:0 auto;padding:0 14px 30px;color:var(--muted);font-size:12px}
+.sync-badge{display:inline-flex;align-items:center;gap:6px;margin:9px auto 0;padding:4px 12px;border-radius:999px;background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.25);font-size:11.5px;font-weight:600;letter-spacing:.03em;width:fit-content}
+.sync-badge .dot{width:8px;height:8px;border-radius:50%;background:#4ade80;flex:0 0 auto}
+.sync-badge.wait .dot{background:#facc15}.sync-badge.off .dot{background:#f87171}
 ol.steps{margin:0;padding-left:20px}
 ol.steps li{margin-bottom:8px}
 code{background:#f1f5f9;border:1px solid var(--line);border-radius:5px;padding:1px 6px;font-size:12.5px}
@@ -78,6 +81,7 @@ code{background:#f1f5f9;border:1px solid var(--line);border-radius:5px;padding:1
 <header class="app">
   <h1>LAPORAN HARIAN UNIT SINAR MAJU JAYA</h1>
   <p class="comp">THE UNI VENUS SERANG BANTEN</p>
+  <div class="sync-badge" id="syncBadge"><span class="dot"></span><span id="syncTxt">Memuat sinkron…</span></div>
 </header>
 
 <nav class="tabs" id="tabs">
@@ -190,14 +194,15 @@ code{background:#f1f5f9;border:1px solid var(--line);border-radius:5px;padding:1
   <div class="card">
     <h2>Panduan Singkat</h2>
     <ol class="steps">
-      <li><b>Siapkan master data</b> — isi <b>📍 Master Tujuan</b> dan <b>🚛 Master Unit</b> (pilih kontrak A–D untuk tiap unit). <b>Boleh dilewati:</b> bila master masih kosong, langsung ketik di form input — data baru otomatis tersimpan ke master.</li>
+      <li><b>Ruang Sinkron (data bersama)</b> — semua perangkat yang membuka aplikasi dengan <b>Ruang</b> yang sama otomatis berbagi data: yang diinput orang satu langsung muncul di perangkat orang lain, tanpa perlu kirim-pesan. Salin tautan ruang di tab <b>📖 Panduan &amp; Setelan → Ruang Sinkron</b> dan bagikan ke rekan satu tim saja (bukan ke WhatsApp pabrik). Status sinkron tampil di garis di bawah judul: 🟢 tersinkron · 🟡 sedang menyinkronkan · 🔴 luring (data aman di perangkat, otomatis terkirim saat online).</li>
+      <li><b>Siapkan master data</b> — isi <b>📍 Master Tujuan</b> dan <b>🚛 Master Unit</b> (pilih kontrak A–D untuk tiap unit). <b>Boleh dilewati:</b> bila master masih kosong, langsung ketik di form input — data baru otomatis tersimpan ke master. Master tersimpan permanen dan bisa diedit (✎) / dihapus (🗑) kapan saja — perubahan ikut tersinkron ke semua perangkat.</li>
       <li><b>Input harian</b> — di tab <b>📋 Input Laporan</b>: isi tanggal, ketik/pilih no. unit, pilih <b>kontrak di dropdown</b> (otomatis terisi bila unit sudah dikenal), pilih status (<b>Kirim / Inap / Standby / Storing Perbaikan</b>), dan ketik/pilih tujuan, lalu klik <b>+ Tambah Laporan</b>.</li>
       <li><b>Cek rekap</b> — di tab <b>📤 Rekap &amp; Kirim WA</b> pilih tanggal; tabel Kontrak A, B, C, D terisi otomatis.</li>
       <li><b>Kirim WhatsApp</b> — di tab <b>📤 Rekap &amp; Kirim WA</b> klik <b>📤 Kirim WA Semua Kontrak</b>: kontrak A, B, C, D digabung menjadi <b>satu pesan</b> dan terkirim sekali. Pesan berformat <b>struk</b> — rata mono bergaris dengan emoji warna status. Nomor tujuan diatur di bawah; bila kosong, Anda tinggal memilih kontak saat WhatsApp terbuka.</li>
       <li><b>Unduh gambar tabel</b> — di tab <b>📤 Rekap &amp; Kirim WA</b> klik <b>🖼️ Unduh Gambar Tabel</b> untuk menyimpan rekap sebagai <b>gambar PNG</b> bergaya tabel Excel (bergaris dan berwarna per kontrak) — praktis dilampirkan ke WhatsApp.</li>
       <li><b>Rekap ke Excel</b> — di tab <b>📤 Rekap &amp; Kirim WA</b> klik <b>📊 Unduh Excel</b>. Hasilnya file <b>.xlsx</b> berisi sheet <b>Rekap</b> (tabel berwarna per kontrak &amp; status, sama seperti rekap yang dikirim ke WhatsApp) dan sheet <b>Semua Data</b> (seluruh riwayat laporan dengan filter siap pakai — tinggal disalin ke file rekap Excel Anda). File bisa dibuka di Excel, WPS Office, atau Google Sheets.</li>
       <li><b>Kirim Excel ke WhatsApp</b> — klik <b>📎 Kirim Excel ke WA</b> (rekap harian atau bulanan). Di <b>HP</b> (Android/Chrome): sheet berbagi terbuka — pilih <b>WhatsApp</b>, pilih kontak, dan file Excel langsung terlampir di chat. Di <b>komputer</b>: file Excel otomatis diunduh dan WhatsApp terbuka — kirim pesannya, lalu <b>lampirkan file yang barusan diunduh</b> lewat ikon 📎 (tautan WA tidak bisa membawa file, jadi file dilampirkan manual).</li>
-      <li><b>Laporan bulanan per no. pol</b> — di bagian bawah tab <b>📤 Rekap &amp; Kirim WA</b>, pilih bulan lalu klik <b>📊 Unduh Excel Bulanan</b>: file Excel bergaris berisi sheet <b>Rekap per Unit</b> (jumlah Kirim/Inap/Standby/Storing tiap no. pol), sheet <b>Kalender Bulanan</b> (status tiap unit tanggal 1–31: K/I/S/ST, berwarna, akhir pekan disorot), dan sheet <b>Detail Harian</b> (semua laporan bulan itu). Bisa juga langsung dikirim ke WhatsApp dengan <b>📎 Kirim Excel ke WA</b>.</li>
+      <li><b>Laporan bulanan per no. pol</b> — di bagian bawah tab <b>📤 Rekap &amp; Kirim WA</b>, pilih bulan lalu klik <b>📊 Unduh Excel Bulanan</b>: file Excel bergaris berisi sheet <b>Rekap per Unit</b> (jumlah Kirim/Inap/Standby/Storing tiap no. pol), sheet <b>Kalender Bulanan</b> (status tiap unit tanggal 1–31: K/I/S/ST, berwarna, akhir pekan disorot), dan sheet <b>Detail Harian</b> (semua laporan bulan itu). Tabel <b>Detail Laporan</b> di layar bisa diedit (✎) / dihapus (🗑) — hapus No. 1 dan nomor berikutnya otomatis menyesuaikan. Bisa juga langsung dikirim ke WhatsApp dengan <b>📎 Kirim Excel ke WA</b>.</li>
       <li><b>Kalau popup WA tidak muncul</b> — izinkan popup di browser, atau pakai tombol <b>📋 Salin Pesan</b> lalu tempel manual ke WhatsApp.</li>
     </ol>
   </div>
@@ -210,8 +215,24 @@ code{background:#f1f5f9;border:1px solid var(--line);border-radius:5px;padding:1
     <div class="actions"><button class="btn primary" id="btnSaveWa">💾 Simpan Nomor</button></div>
   </div>
   <div class="card">
+    <h2>Ruang Sinkron — Data Bersama Antarpengguna</h2>
+    <p class="sub">Semua perangkat yang membuka aplikasi dengan <b>Ruang</b> yang sama otomatis berbagi data: yang diinput orang satu langsung muncul di perangkat orang lain (tanpa perlu kirim WhatsApp). Laporan, master tujuan, master unit, editan, dan penghapusan semuanya ikut tersinkron.</p>
+    <div id="syncRoomInfo" style="font-size:13px;margin-bottom:10px"></div>
+    <div class="actions" style="margin-top:0">
+      <button class="btn primary" id="btnSyncNow" title="Tarik & dorong data ke cloud sekarang juga">🔄 Sinkron Sekarang</button>
+      <button class="btn ghost" id="btnRoomLink" title="Salin tautan aplikasi + ID ruang — buka di perangkat lain untuk ikut berbagi data">🔗 Salin Tautan Ruang</button>
+      <button class="btn ghost" id="btnRoomNew" title="Buat ruang sinkron baru yang terpisah dari data lama">✨ Buat Ruang Baru</button>
+      <button class="btn ghost" id="btnRoomDef" hidden>Kembali ke Ruang Bawaan</button>
+    </div>
+    <div class="add-inline" style="margin-top:10px">
+      <input type="text" id="roomJoin" placeholder="Tempel ID ruang (SMJ-...) atau tautan lengkap">
+      <button class="btn primary" id="btnRoomJoin">Gabung Ruang</button>
+    </div>
+    <p class="hint">Tautan ruang disalin lewat <b>🔗 Salin Tautan Ruang</b> lalu dibagikan ke rekan satu tim (bukan ke WhatsApp pabrik). Perhatian: siapa pun yang punya tautan/ID ruang dapat melihat dan mengubah data — jangan sebarkan ke luar tim. Bila internet mati, data tetap tersimpan di perangkat dan tersinkron otomatis begitu online kembali.</p>
+  </div>
+  <div class="card">
     <h2>Backup &amp; Data</h2>
-    <p class="sub">Halaman ini statis (tanpa server) dan menyimpan data di penyimpanan browser perangkat ini (localStorage). Lakukan backup rutin, terutama sebelum menghapus data browser atau ganti perangkat.</p>
+    <p class="sub">Halaman ini statis (tanpa server): data tersimpan di penyimpanan browser perangkat ini dan otomatis tersinkron ke <b>Ruang Sinkron</b> di atas. Backup rutin tetap disarankan sebelum menghapus data browser atau ganti perangkat.</p>
     <div class="actions">
       <button class="btn ghost" id="btnBackup">⬇️ Unduh Backup (.json)</button>
       <button class="btn ghost" id="btnRestore">⬆️ Pulihkan Backup</button>
@@ -223,12 +244,16 @@ code{background:#f1f5f9;border:1px solid var(--line);border-radius:5px;padding:1
 
 </main>
 
-<footer class="note">Aplikasi Laporan Harian Unit — SINAR MAJU JAYA · THE UNI VENUS SERANG BANTEN. Halaman statis HTML tunggal (tanpa server); data tersimpan otomatis di browser perangkat ini.</footer>
+<footer class="note">Aplikasi Laporan Harian Unit — SINAR MAJU JAYA · THE UNI VENUS SERANG BANTEN. Halaman statis HTML tunggal (tanpa server); data tersimpan otomatis di browser dan tersinkron antar perangkat dalam satu Ruang Sinkron.</footer>
 <div class="toast" id="toast"></div>
 
 <script>
 "use strict";
 var LS_KEY='laporanUnit.v1';
+var ROOM_KEY='laporanUnit.room';
+var TDB='https://textdb.dev/api/data/';
+var TDB_PRE='lumj-v1-';
+var DEF_ROOM='SMJ-VBHGFKPT5';
 var KONTRAK={
   A:{nama:'KONTRAK MIL (WING BOX)',short:'MIL (WING BOX)'},
   B:{nama:'KONTRAK MIL (FUSO LONG)',short:'MIL (FUSO LONG)'},
@@ -243,16 +268,208 @@ var KBCOL={A:'#3730a3',B:'#0f766e',C:'#c2410c',D:'#7e22ce'};
 function el(id){return document.getElementById(id)}
 function stClass(s){return s==='Kirim'?'st-kirim':(s==='Inap'?'st-inap':(s==='Standby'?'st-standby':'st-storing'))}
 
-function load(){try{var raw=localStorage.getItem(LS_KEY);if(!raw)return null;var d=JSON.parse(raw);if(!d||!Array.isArray(d.laporan)||!Array.isArray(d.unit))return null;if(!d.wa)d.wa={a:'',b:'',c:'',d:'',admin:''};return d}catch(e){return null}}
-function blank(){return{tujuan:[],unit:[],laporan:[],wa:{a:'',b:'',c:'',d:'',admin:''},sample:false}}
+function load(){try{var raw=localStorage.getItem(LS_KEY);if(!raw)return null;var d=JSON.parse(raw);if(!d||!Array.isArray(d.laporan)||!Array.isArray(d.unit))return null;return migrate(d)}catch(e){return null}}
+function migrate(d){
+  if(!Array.isArray(d.delLog))d.delLog=[];
+  if(!d.wa)d.wa={a:'',b:'',c:'',d:'',admin:''};
+  if(d.waUpd==null)d.waUpd=0;
+  ['laporan','tujuan','unit'].forEach(function(c){
+    if(!Array.isArray(d[c]))d[c]=[];
+    d[c].forEach(function(x){
+      if(!x.id)x.id=uid();
+      if(!x.upd)x.upd=Date.now();
+    });
+  });
+  d.laporan.forEach(function(l){if(!l.ts)l.ts=l.upd||Date.now()});
+  if(d.sample==null)d.sample=false;
+  return d;
+}
+function blank(){return{tujuan:[],unit:[],laporan:[],wa:{a:'',b:'',c:'',d:'',admin:''},waUpd:0,delLog:[],sample:false}}
 function uid(){return Date.now().toString(36)+Math.random().toString(36).slice(2,8)}
-function save(){localStorage.setItem(LS_KEY,JSON.stringify(db))}
+function save(){localStorage.setItem(LS_KEY,JSON.stringify(db));syncMarkDirty()}
 function pad(n){return String(n).padStart(2,'0')}
 function todayISO(){var d=new Date();return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate())}
 function fmtTgl(iso){if(!iso)return'';var p=iso.split('-');return p[2]+'/'+p[1]+'/'+p[0]}
 function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})}
 function toast(m){var t=el('toast');t.textContent=m;t.classList.add('show');clearTimeout(toast._h);toast._h=setTimeout(function(){t.classList.remove('show')},2600)}
 function latestDate(){if(!db.laporan.length)return todayISO();return db.laporan.map(function(l){return l.tanggal}).sort().reverse()[0]}
+
+// ==== SINKRON RUANG (cloud publik sederhana via textdb.dev) ====
+var SYNC={active:false,dirty:false,pushTimer:null,pullTimer:null,pushing:false,pulling:false,lastOk:0,lastBadge:'',warned:false};
+function nowMs(){return Date.now()}
+function syncRoomId(){return localStorage.getItem(ROOM_KEY)||DEF_ROOM}
+function syncKey(){return TDB+TDB_PRE+syncRoomId()}
+function tomb(id){
+  var u=nowMs(),found=null;
+  db.delLog.forEach(function(t){if(t.id===id)found=t});
+  if(found)found.upd=Math.max(found.upd,u);else db.delLog.push({id:id,upd:u});
+}
+function mergeRemote(remote){
+  if(!remote||typeof remote!=='object')return false;
+  var changed=false,log={};
+  db.delLog.forEach(function(t){if(t&&t.id)log[t.id]=Math.max(log[t.id]||0,t.upd||0)});
+  (Array.isArray(remote.delLog)?remote.delLog:[]).forEach(function(t){
+    if(!t||!t.id)return;
+    var u=t.upd||0;
+    if(log[t.id]==null||u>log[t.id]){log[t.id]=u;changed=true}
+  });
+  // Mode review: data contoh kalah bila cloud sudah berisi data sungguhan
+  var remoteHasData=['laporan','tujuan','unit'].some(function(c){return Array.isArray(remote[c])&&remote[c].length});
+  if(remoteHasData&&db.sample){
+    db.sample=false;changed=true;
+    ['laporan','tujuan','unit'].forEach(function(c){db[c].forEach(function(x){log[x.id]=Math.max(log[x.id]||0,nowMs())})});
+    db.laporan=[];db.tujuan=[];db.unit=[];
+  }
+  db.delLog=Object.keys(log).map(function(id){return{id:id,upd:log[id]}});
+  function isDead(id){return log[id]!=null}
+  ['laporan','tujuan','unit'].forEach(function(coll){
+    var rem=Array.isArray(remote[coll])?remote[coll]:[];
+    rem.forEach(function(x){
+      if(!x||!x.id)return;
+      if(isDead(x.id)&&log[x.id]>=(x.upd||0))return;
+      var loc=null;db[coll].forEach(function(y){if(y.id===x.id)loc=y});
+      if(!loc){var cp=migrateOne(x);if(cp){db[coll].push(cp);changed=true}}
+      else if((x.upd||0)>(loc.upd||0)){Object.assign(loc,migrateOne(x));changed=true}
+    });
+    for(var i=db[coll].length-1;i>=0;i--){
+      var y=db[coll][i];
+      if(isDead(y.id)&&log[y.id]>=(y.upd||0)){db[coll].splice(i,1);changed=true}
+    }
+  });
+  // laporan kembar (unit+tanggal sama) dari dua perangkat sebelum bergabung: simpan yang terbaru
+  var seen={},dupe=[];
+  db.laporan.sort(function(a,b){return (a.upd||0)-(b.upd||0)}).forEach(function(l){
+    var k=String(l.unit).toUpperCase()+'|'+l.tanggal;
+    if(seen[k]){tomb(l.id);dupe.push(l.id)}
+    else seen[k]=l;
+  });
+  if(dupe.length){db.laporan=db.laporan.filter(function(l){return dupe.indexOf(l.id)<0});changed=true}
+  if(remote.wa&&remote.waUpd>(db.waUpd||0)){db.wa=Object.assign(blank().wa,remote.wa);db.waUpd=remote.waUpd;changed=true}
+  return changed;
+}
+function migrateOne(x){
+  if(!x||typeof x!=='object'||!x.id)return null;
+  var cp=Object.assign({},x);
+  if(!cp.upd)cp.upd=Date.now();
+  if(cp.ts==null)cp.ts=cp.upd;
+  return cp;
+}
+function syncBadge(mode,extra){
+  var b=el('syncBadge'),t=el('syncTxt');
+  if(!b||!t)return;
+  b.className='sync-badge'+(mode==='wait'?' wait':(mode==='off'?' off':''));
+  var room=syncRoomId();
+  if(mode==='ok')t.textContent='Tersinkron · Ruang '+room+(extra?' · '+extra:'');
+  else if(mode==='wait')t.textContent='Menyinkronkan… · Ruang '+room;
+  else t.textContent='Luring — data disimpan di perangkat ini · Ruang '+room;
+  SYNC.lastBadge=mode;
+}
+function syncMarkDirty(){
+  if(!SYNC.active)return;
+  SYNC.dirty=true;
+  clearTimeout(SYNC.pushTimer);
+  SYNC.pushTimer=setTimeout(syncPush,900);
+  if(SYNC.lastBadge!=='wait')syncBadge('wait');
+}
+function syncPush(){
+  if(!SYNC.active||!SYNC.dirty||SYNC.pushing)return;
+  SYNC.pushing=true;SYNC.dirty=false;
+  var body=JSON.stringify(db);
+  if(body.length>280000&&!SYNC.warned){SYNC.warned=true;toast('⚠ Data ruang sudah sangat besar ('+Math.round(body.length/1000)+' KB) — pertimbangkan menghapus laporan lama.')}
+  fetch(syncKey(),{method:'POST',body:body}).then(function(r){
+    if(!r.ok)throw new Error('HTTP '+r.status);
+    SYNC.lastOk=nowMs();SYNC.dirty=false;
+    syncBadge('ok',new Date().toLocaleTimeString('id-ID'));
+  }).catch(function(){
+    SYNC.dirty=true;
+    syncBadge('off');
+  }).then(function(){SYNC.pushing=false});
+}
+function syncPull(){
+  if(!SYNC.active||SYNC.pulling)return;
+  SYNC.pulling=true;
+  fetch(syncKey(),{method:'GET'}).then(function(r){
+    if(r.status===404)return '';           // ruang masih kosong
+    if(!r.ok)throw new Error('HTTP '+r.status);
+    return r.text();
+  }).then(function(txt){
+    txt=(txt||'').trim();
+    var remote=null;
+    if(txt){try{remote=JSON.parse(txt)}catch(e){remote=null}}
+    var changed=remote?mergeRemote(remote):false;
+    if(changed){
+      localStorage.setItem(LS_KEY,JSON.stringify(db));
+      renderAll();renderWaSettings();
+      if(document.hasFocus())toast('🔄 Diperbarui otomatis — data terbaru dari perangkat lain di ruang ini.');
+      SYNC.dirty=true;syncPush();
+    }else{
+      localStorage.setItem(LS_KEY,JSON.stringify(db));
+    }
+    if(!remote||!txt){SYNC.dirty=true;syncPush()}
+    else{SYNC.lastOk=nowMs();syncBadge('ok',new Date().toLocaleTimeString('id-ID'))}
+  }).catch(function(){
+    syncBadge('off');
+  }).then(function(){SYNC.pulling=false});
+}
+function syncNow(manual){
+  if(!SYNC.active)return;
+  syncBadge('wait');
+  syncPull();
+  clearTimeout(SYNC.pushTimer);
+  SYNC.pushTimer=setTimeout(syncPush,1200);
+  if(manual)toast('🔄 Menarik & mendorong data ke ruang…');
+}
+function syncJoinRoom(input){
+  var v=String(input||'').trim();
+  if(!v){toast('⚠ Tempel ID ruang atau tautannya dulu.');return}
+  var m=v.match(/ruang=([A-Za-z0-9\-]+)/)||v.match(/\b(SMJ-[A-Za-z0-9\-]{4,40})\b/);
+  var id=m?m[1]:v;
+  if(!/^[A-Za-z0-9\-]{4,40}$/.test(id)){toast('⚠ Format ID ruang tidak dikenal (contoh: SMJ-ABC123XYZ).');return}
+  localStorage.setItem(ROOM_KEY,id);
+  SYNC.dirty=false;
+  syncBadge('wait');
+  syncPull();
+  renderSyncCard();
+  toast('✓ Bergabung ke ruang '+id+' — menarik datanya…');
+}
+function syncNewRoom(){
+  if(!window.confirm('Buat ruang sinkron BARU?\nPerangkat yang bergabung ke ruang baru akan berbagi data mulai dari kondisi saat ini. Ruang lama tidak terhapus.'))return;
+  var chars='ABCDEFGHJKLMNPQRSTUVWXYZ23456789',s='SMJ-';
+  for(var i=0;i<8;i++)s+=chars.charAt(Math.floor(Math.random()*chars.length));
+  localStorage.setItem(ROOM_KEY,s);
+  SYNC.dirty=true;syncPush();
+  renderSyncCard();
+  toast('✓ Ruang baru: '+s+' — bagikan tautannya lewat 🔗 Salin Tautan Ruang.');
+}
+function syncUseDefault(){
+  localStorage.removeItem(ROOM_KEY);
+  SYNC.dirty=false;syncBadge('wait');
+  syncPull();renderSyncCard();
+  toast('Kembali ke ruang bawaan '+DEF_ROOM+'.');
+}
+function syncRoomLink(){
+  var base=location.href.split(/[?#]/)[0];
+  var url=base+'?ruang='+encodeURIComponent(syncRoomId());
+  copyText(url);
+}
+function renderSyncCard(){
+  var room=syncRoomId(),isDef=room===DEF_ROOM;
+  var info=el('syncRoomInfo');
+  if(info)info.innerHTML='Ruang saat ini: <b><code>'+esc(room)+'</code></b>'+(isDef?' <span class="badge st-inap">ruang bawaan</span>':' <span class="badge st-kirim">ruang khusus</span>');
+  var def=el('btnRoomDef');if(def)def.hidden=isDef;
+}
+function syncInit(){
+  var m=location.search.match(/[?&]ruang=([A-Za-z0-9\-]+)/)||location.hash.match(/[#&]ruang=([A-Za-z0-9\-]+)/);
+  if(m)localStorage.setItem(ROOM_KEY,m[1]);
+  SYNC.active=true;
+  renderSyncCard();
+  syncBadge('wait');
+  syncPull();
+  SYNC.pullTimer=setInterval(function(){syncPull();if(SYNC.dirty)syncPush()},10000);
+  window.addEventListener('focus',function(){syncPull();if(SYNC.dirty)syncPush()});
+  window.addEventListener('online',function(){SYNC.dirty=true;syncPush()});
+}
+// ==== AKHIR SINKRON ====
 
 function seed(){
   var d=blank();d.sample=true;
@@ -269,7 +486,7 @@ function seed(){
   return d;
 }
 
-var db=load()||seed();
+var db=migrate(load()||seed());
 var editingId=null;
 var rekapDate=latestDate();
 var editTujuanId=null,editUnitId=null;
@@ -326,7 +543,16 @@ function renderSummary(){
 
 function filteredRows(k){
   return db.laporan.filter(function(l){return l.kontrak===k&&(rekapDate==='ALL'||l.tanggal===rekapDate)})
-    .slice().sort(function(a,b){return b.tanggal.localeCompare(a.tanggal)});
+    .slice().sort(function(a,b){return b.tanggal.localeCompare(a.tanggal)||((a.ts||0)-(b.ts||0))||String(a.id).localeCompare(String(b.id))});
+}
+function sortDetail(arr){
+  arr.sort(function(a,b){
+    if(a.tanggal!==b.tanggal)return a.tanggal.localeCompare(b.tanggal);
+    if(a.kontrak!==b.kontrak)return a.kontrak.localeCompare(b.kontrak);
+    if(a.unit!==b.unit)return a.unit.localeCompare(b.unit);
+    return (a.ts||0)-(b.ts||0)||String(a.id).localeCompare(String(b.id));
+  });
+  return arr;
 }
 
 function renderRekap(){
@@ -673,9 +899,7 @@ function buildXlsx(secs,total){
   var sheet1=H+'<worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"><sheetPr><pageSetUpPr fitToPage="1"/></sheetPr><sheetViews><sheetView workbookViewId="0"/></sheetViews>'+xlsCols([6,12,15,20,30])+'<sheetData>'+rows.join('')+'</sheetData>'+tail+pg+'</worksheet>';
   var rows2=[],r2=0;
   rows2.push(xlsRow(++r2,[{v:'NO',s:4},{v:'TANGGAL',s:4},{v:'KONTRAK',s:4},{v:'NO. UNIT',s:4},{v:'STATUS',s:4},{v:'TUJUAN',s:4}]));
-  var all=db.laporan.slice().sort(function(a,b){
-    return a.tanggal===b.tanggal?(a.kontrak===b.kontrak?a.unit.localeCompare(b.unit):a.kontrak.localeCompare(b.kontrak)):a.tanggal.localeCompare(b.tanggal);
-  });
+  var all=sortDetail(db.laporan.slice());
   all.forEach(function(l,i){
     rows2.push(xlsRow(++r2,[{v:String(i+1),s:10},{v:fmtTgl(l.tanggal),s:10},{v:'KONTRAK '+l.kontrak+' — '+KONTRAK[l.kontrak].nama,s:10},{v:l.unit,s:10},{v:l.status,s:xlsStXf(l.status)},{v:l.tujuan,s:10}]));
   });
@@ -842,9 +1066,7 @@ function buildBulanXlsx(ym){
   // -- Sheet 3: Detail Harian --
   var rows3=[],r3=0;
   rows3.push(xlsRow(++r3,[{v:'NO',s:4},{v:'TANGGAL',s:4},{v:'KONTRAK',s:4},{v:'NO. UNIT',s:4},{v:'STATUS',s:4},{v:'TUJUAN',s:4}]));
-  db.laporan.filter(function(l){return l.tanggal.slice(0,7)===ym}).sort(function(a,b){
-    return a.tanggal===b.tanggal?(a.kontrak===b.kontrak?a.unit.localeCompare(b.unit):a.kontrak.localeCompare(b.kontrak)):a.tanggal.localeCompare(b.tanggal);
-  }).forEach(function(l,i){
+  sortDetail(db.laporan.filter(function(l){return l.tanggal.slice(0,7)===ym})).forEach(function(l,i){
     rows3.push(xlsRow(++r3,[{v:String(i+1),s:10},{v:fmtTgl(l.tanggal),s:10},{v:'KONTRAK '+l.kontrak+' — '+KONTRAK[l.kontrak].nama,s:10},{v:l.unit,s:23},{v:l.status,s:xlsStXf(l.status)},{v:l.tujuan,s:10}]));
   });
   var ws3=H+'<worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"><sheetPr><pageSetUpPr fitToPage="1"/></sheetPr><sheetViews><sheetView workbookViewId="0"><pane ySplit="1" topLeftCell="A2" activePane="bottomLeft" state="frozen"/></sheetView></sheetViews>'+xlsCols([6,12,30,15,20,30])+'<sheetData>'+rows3.join('')+'</sheetData>'+(r3>1?'<autoFilter ref="A1:F'+r3+'"/>':'')+pgP+'</worksheet>';
@@ -893,7 +1115,7 @@ function sendBulanWa(){
 }
 function renderBulan(){
   var rows=bulanRows(bulanYm),st=bulanCount(rows,bulanYm);
-  el('bulanInfo').innerHTML='Menampilkan <b>'+rows.length+'</b> unit · <b>'+st.total+'</b> laporan — <b>'+bulanLabel(bulanYm)+'</b>';
+  el('bulanInfo').innerHTML='Menampilkan <b>'+rows.length+'</b> unit · <b>'+st.total+'</b> laporan — <b>'+bulanLabel(bulanYm)+'</b>. Baris di <b>Detail Laporan</b> di bawah bisa diedit (✎) atau dihapus (🗑) — jika No. 1 dihapus, nomor berikutnya otomatis naik.';
   if(!rows.length||!st.total){
     el('bulanPrev').innerHTML='<div class="empty">Belum ada laporan pada bulan '+bulanLabel(bulanYm)+' — pilih bulan lain di atas, atau input laporan dulu di tab 📋 Input Laporan.</div>';
     return;
@@ -908,6 +1130,19 @@ function renderBulan(){
       '<td class="mono" style="text-align:center">'+(x['Standby']||0)+'</td>'+
       '<td class="mono" style="text-align:center">'+(x['Storing Perbaikan']||0)+'</td>'+
       '<td class="mono" style="text-align:center"><b>'+n+'</b></td></tr>';
+  });
+  h+='</tbody></table></div>';
+  var det=sortDetail(db.laporan.filter(function(l){return l.tanggal.slice(0,7)===bulanYm}).slice());
+  h+='<h2 style="font-size:15px;margin:18px 0 4px">Detail Laporan — '+bulanLabel(bulanYm)+'</h2>';
+  h+='<p class="sub" style="margin-bottom:0">Nomor = urutan laporan bulan ini. Hapus No. 1 → No. 2 otomatis menjadi No. 1, dan seterusnya.</p>';
+  h+='<div class="table-wrap"><table><thead><tr><th style="width:40px">No</th><th>Tanggal</th><th>Kontrak</th><th>No. Unit</th><th>Status</th><th>Tujuan</th><th style="width:96px">Aksi</th></tr></thead><tbody>';
+  if(!det.length){
+    h+='<tr><td colspan="7" class="empty">Belum ada laporan pada bulan ini.</td></tr>';
+  }else det.forEach(function(r,i){
+    h+='<tr><td class="mono">'+(i+1)+'</td><td class="mono">'+fmtTgl(r.tanggal)+'</td>'+
+      '<td><span class="badge" style="background:'+KBBG[r.kontrak]+';color:'+KBCOL[r.kontrak]+'">'+r.kontrak+'</span></td>'+
+      '<td class="unit">'+esc(r.unit)+'</td><td><span class="badge '+stClass(r.status)+'">'+esc(r.status)+'</span></td><td>'+esc(r.tujuan)+'</td>'+
+      '<td><button class="btn icon" data-act="edit" data-id="'+r.id+'" title="Edit laporan ini">✎</button> <button class="btn icon" data-act="del" data-id="'+r.id+'" title="Hapus laporan ini">🗑</button></td></tr>';
   });
   h+='</tbody></table></div>';
   el('bulanPrev').innerHTML=h;
@@ -926,21 +1161,27 @@ function submitLaporan(){
   var u=db.unit.find(function(x){return x.unit.toLowerCase()===unitNo.toLowerCase()});
   if(!status){toast('⚠ Pilih status.');return}
   if(!tujuan){toast('⚠ Ketik / pilih tujuan dulu.');return}
+  if(db.sample&&!editingId){
+    ['laporan','tujuan','unit'].forEach(function(c){db[c].forEach(function(x){tomb(x.id)})});
+    db.laporan=[];db.tujuan=[];db.unit=[];u=null;
+    db.sample=false;
+    toast('🧪 Data contoh dibersihkan — mulai isi data sungguhan.');
+  }
   var tExist=db.tujuan.find(function(t){return t.nama.toLowerCase()===tujuan.toLowerCase()});
   var baru=[],moved=false;
-  if(!u){u={id:uid(),unit:unitNo,kontrak:kSel};db.unit.push(u);baru.push('unit')}
-  else if(u.kontrak!==kSel){u.kontrak=kSel;moved=true}
-  if(!tExist){db.tujuan.push({id:uid(),nama:tujuan});baru.push('tujuan')}
+  if(!u){u={id:uid(),unit:unitNo,kontrak:kSel,upd:nowMs()};db.unit.push(u);baru.push('unit')}
+  else if(u.kontrak!==kSel){u.kontrak=kSel;u.upd=nowMs();moved=true}
+  if(!tExist){db.tujuan.push({id:uid(),nama:tujuan,upd:nowMs()});baru.push('tujuan')}
   else tujuan=tExist.nama;
   var dup=db.laporan.find(function(l){return l.unit.toLowerCase()===u.unit.toLowerCase()&&l.tanggal===tgl&&l.id!==editingId});
   if(dup&&!window.confirm('Unit '+u.unit+' sudah punya laporan pada '+fmtTgl(tgl)+'.\nTetap simpan laporan ini?'))return;
   if(editingId){
     var l=db.laporan.find(function(x){return x.id===editingId});
-    Object.assign(l,{tanggal:tgl,unitId:u.id,unit:u.unit,kontrak:u.kontrak,status:status,tujuan:tujuan});
+    Object.assign(l,{tanggal:tgl,unitId:u.id,unit:u.unit,kontrak:u.kontrak,status:status,tujuan:tujuan,upd:nowMs()});
     resetEditMode();
     toast('✓ Perubahan disimpan → Kontrak '+u.kontrak+'.');
   }else{
-    db.laporan.push({id:uid(),tanggal:tgl,unitId:u.id,unit:u.unit,kontrak:u.kontrak,status:status,tujuan:tujuan});
+    db.laporan.push({id:uid(),ts:nowMs(),tanggal:tgl,unitId:u.id,unit:u.unit,kontrak:u.kontrak,status:status,tujuan:tujuan,upd:nowMs()});
     el('fUnit').value='';el('fTujuan').value='';el('fKontrak').value='';el('fKontrak').dataset.manual='';
     toast('✓ Tersimpan → Kontrak '+u.kontrak+' ('+KONTRAK[u.kontrak].short+')'+(baru.length?' · '+baru.join(' & ')+' baru otomatis masuk master':'')+(moved?' · pemetaan kontrak unit diperbarui':''));
   }
@@ -970,9 +1211,10 @@ function editLaporan(id){
   toast('Mode edit — ubah data lalu klik Simpan Perubahan.');
 }
 function delLaporan(id){
-  if(!window.confirm('Hapus laporan ini?'))return;
+  if(!window.confirm('Hapus laporan ini? Nomor pada daftar akan otomatis menyesuaikan.'))return;
+  tomb(id);
   db.laporan=db.laporan.filter(function(l){return l.id!==id});
-  save();renderAll();toast('Laporan dihapus.');
+  save();renderAll();toast('Laporan dihapus — nomor daftar otomatis menyesuaikan.');
 }
 
 function renderMasterTujuan(){
@@ -1002,11 +1244,11 @@ function addTujuan(){
   if(!v){toast('⚠ Isi nama tujuan.');return}
   if(editTujuanId){
     var it=db.tujuan.find(function(x){return x.id===editTujuanId});
-    if(it)it.nama=v;
+    if(it){it.nama=v;it.upd=nowMs()}
     resetMasterForm('tujuan');toast('✓ Tujuan diubah.');
   }else{
     if(db.tujuan.some(function(s){return s.nama.toLowerCase()===v.toLowerCase()})){toast('⚠ Nama tujuan sudah ada.');return}
-    db.tujuan.push({id:uid(),nama:v});
+    db.tujuan.push({id:uid(),nama:v,upd:nowMs()});
     el('mTujuanNama').value='';toast('✓ Tujuan ditambahkan.');
   }
   save();renderAll();
@@ -1018,11 +1260,11 @@ function addUnit(){
   if(!k){toast('⚠ Pilih kontrak unit.');return}
   if(editUnitId){
     var it=db.unit.find(function(x){return x.id===editUnitId});
-    if(it){it.unit=v;it.kontrak=k;}
+    if(it){it.unit=v;it.kontrak=k;it.upd=nowMs()}
     resetMasterForm('unit');toast('✓ Unit diubah.');
   }else{
     if(db.unit.some(function(s){return s.unit.toLowerCase()===v.toLowerCase()})){toast('⚠ No. unit sudah ada.');return}
-    db.unit.push({id:uid(),unit:v,kontrak:k});
+    db.unit.push({id:uid(),unit:v,kontrak:k,upd:nowMs()});
     el('mUnitNo').value='';toast('✓ Unit ditambahkan ke Kontrak '+k+'.');
   }
   save();renderAll();
@@ -1044,6 +1286,7 @@ function delMaster(m,id){
   var msg='Hapus '+label+' “'+(m==='unit'?it.unit:it.nama)+'”?';
   if(n)msg+='\nCatatan: dipakai di '+n+' laporan. Laporan lama tetap menyimpan data ini.';
   if(!window.confirm(msg))return;
+  tomb(id);
   list.splice(idx,1);
   save();renderAll();toast('Data '+label+' dihapus.');
 }
@@ -1053,6 +1296,7 @@ function renderWaSettings(){
 }
 function saveWa(){
   ['admin'].forEach(function(k){db.wa[k]=el('wa-'+k).value.trim()});
+  db.waUpd=nowMs();
   save();toast('✓ Nomor WhatsApp disimpan.');
 }
 function backupData(){
@@ -1065,9 +1309,14 @@ function backupData(){
   toast('⬇️ Backup diunduh.');
 }
 function resetAll(){
-  if(!window.confirm('Kosongkan SEMUA data (master tujuan, unit, dan seluruh laporan)?'))return;
+  if(!window.confirm('Kosongkan SEMUA data (master tujuan, unit, dan seluruh laporan)?\nPerangkat lain dalam ruang yang sama juga akan dikosongkan.'))return;
   if(!window.confirm('Yakin? Tindakan ini tidak bisa dibatalkan.'))return;
-  db=blank();save();
+  ['laporan','tujuan','unit'].forEach(function(c){db[c].forEach(function(x){tomb(x.id)})});
+  var keepLog=db.delLog;
+  db=blank();
+  db.delLog=keepLog;
+  db.sample=false;db.waUpd=nowMs();
+  save();
   el('fTgl').value=todayISO();
   rekapDate=todayISO();
   renderAll();renderWaSettings();
@@ -1129,8 +1378,13 @@ el('restoreFile').addEventListener('change',function(e){
       var d=JSON.parse(rd.result);
       if(!d||!Array.isArray(d.laporan)||!Array.isArray(d.unit)||!Array.isArray(d.tujuan))throw new Error('format');
       if(!window.confirm('Pulihkan data dari file?\nData saat ini akan diganti.'))return;
+      d=migrate(d);
+      var keep={};
+      ['laporan','tujuan','unit'].forEach(function(c){d[c].forEach(function(x){keep[x.id]=1})});
+      ['laporan','tujuan','unit'].forEach(function(c){db[c].forEach(function(x){if(!keep[x.id])tomb(x.id)})});
+      var keepLog=db.delLog;
       db=Object.assign(blank(),d);
-      if(!db.wa)db.wa={a:'',b:'',c:'',d:'',admin:''};
+      db.delLog=keepLog;
       db.sample=false;
       save();rekapDate=latestDate();
       el('fTgl').value=todayISO();
@@ -1142,6 +1396,12 @@ el('restoreFile').addEventListener('change',function(e){
   e.target.value='';
 });
 el('btnReset').addEventListener('click',resetAll);
+el('btnSyncNow').addEventListener('click',function(){syncNow(true)});
+el('btnRoomLink').addEventListener('click',syncRoomLink);
+el('btnRoomNew').addEventListener('click',syncNewRoom);
+el('btnRoomDef').addEventListener('click',syncUseDefault);
+el('btnRoomJoin').addEventListener('click',function(){syncJoinRoom(el('roomJoin').value)});
+el('roomJoin').addEventListener('keydown',function(e){if(e.key==='Enter')syncJoinRoom(this.value)});
 
 el('fTgl').value=todayISO();
 el('mBulan').value=bulanYm;
@@ -1149,6 +1409,7 @@ el('mUnitKontrak').innerHTML=kontrakOptions(null);
 renderAll();
 renderWaSettings();
 showTab('input');
+syncInit();
 </script>
 </body>
   </html>
