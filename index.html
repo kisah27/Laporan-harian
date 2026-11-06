@@ -474,13 +474,13 @@ function syncInit(){
 function seed(){
   var d=blank();d.sample=true;
   d.tujuan=['Catur Sentosa Anugrah','CSA Gudang Cikarang','Depot Cibitung','Workshop Cakung'].map(function(n){return{id:uid(),nama:n}});
-  d.unit=[['B 9526 UPA','A'],['B 9031 UKZ','B'],['B 9445 TYA','C'],['B 9218 USD','D'],['B 9220 USD','D']].map(function(u){return{id:uid(),unit:u[0],kontrak:u[1]}});
+  d.unit=[['B 9526 UPA','C'],['B 9561 UYV','C'],['B 9563 UYV','C'],['B 9673 BYT','C'],['B 9729 AU','D']].map(function(u){return{id:uid(),unit:u[0],kontrak:u[1]}});
   d.laporan=[
-    {id:uid(),tanggal:'2026-10-05',unit:'B 9526 UPA',kontrak:'A',status:'Inap',tujuan:'Catur Sentosa Anugrah'},
-    {id:uid(),tanggal:'2026-10-05',unit:'B 9031 UKZ',kontrak:'B',status:'Standby',tujuan:'Depot Cibitung'},
-    {id:uid(),tanggal:'2026-10-05',unit:'B 9445 TYA',kontrak:'C',status:'Inap',tujuan:'CSA Gudang Cikarang'},
-    {id:uid(),tanggal:'2026-10-05',unit:'B 9218 USD',kontrak:'D',status:'Storing Perbaikan',tujuan:'Workshop Cakung'},
-    {id:uid(),tanggal:'2026-10-05',unit:'B 9220 USD',kontrak:'D',status:'Kirim',tujuan:'Depot Cibitung'}
+    {id:uid(),tanggal:'2026-10-05',unit:'B 9526 UPA',kontrak:'C',status:'Inap',tujuan:'Catur Sentosa Anugrah (Bayur)'},
+    {id:uid(),tanggal:'2026-10-05',unit:'B 9561 UYV',kontrak:'C',status:'Standby',tujuan:'Catur Sentosa Anugrah (Daan Mogot)'},
+    {id:uid(),tanggal:'2026-10-05',unit:'B 9563 UYV',kontrak:'C',status:'Inap',tujuan:'Catur Sentosa Anugrah (Serang)'},
+    {id:uid(),tanggal:'2026-10-05',unit:'B 9673 BYT',kontrak:'C',status:'Storing Perbaikan',tujuan:'Catur Sentosa Anugrah (Bogor)'},
+    {id:uid(),tanggal:'2026-10-05',unit:'B 9729 AU',kontrak:'C',status:'Kirim',tujuan:'Catur Sentosa Anugrah (Tambun)'}
   ];
   localStorage.setItem(LS_KEY,JSON.stringify(d));
   return d;
