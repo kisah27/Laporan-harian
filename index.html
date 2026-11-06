@@ -228,6 +228,43 @@ code{background:#f1f5f9;border:1px solid var(--line);border-radius:5px;padding:1
       <input type="text" id="roomJoin" placeholder="Tempel ID ruang (SMJ-...) atau tautan lengkap">
       <button class="btn primary" id="btnRoomJoin">Gabung Ruang</button>
     </div>
+    <div class="add-inline" style="margin-top:12px">
+      <label class="f" for="svcSel" style="white-space:nowrap;margin:0">Layanan sinkron</label>
+      <select id="svcSel" style="flex:1 1 auto;min-width:220px">
+        <option value="tdb">Bawaan — langsung jalan, tanpa setelan</option>
+        <option value="fb">Firebase (Google) — data di proyek Anda sendiri (otomatis aktif begitu database dibuat)</option>
+      </select>
+    </div>
+    <div id="fbPanel" hidden style="margin-top:10px;border:1px solid #e2e8f0;border-radius:10px;padding:12px;background:#f8fafc">
+      <button class="btn primary" id="btnFbConsole" style="width:100%;margin-bottom:10px">🚀 Buka Console Firebase — buat Realtime Database (langkah 1 & 2 panduan)</button>
+      <label class="f">Database URL Firebase — disalin dari console → Realtime Database</label>
+      <div class="add-inline">
+        <input type="text" id="fbUrl" placeholder="https://laporan-aef1e-default-rtdb.asia-southeast1.firebasedatabase.app">
+        <button class="btn primary" id="btnFbSave">🔌 Sambungkan</button>
+      </div>
+      <p class="hint" id="fbState" style="margin-top:8px"></p>
+      <details style="margin-top:6px">
+        <summary style="cursor:pointer;font-size:13px;font-weight:600">📖 Panduan menyiapkan Firebase (± 5 menit, sekali saja)</summary>
+        <ol style="font-size:13px;line-height:1.7;margin:8px 0 4px 18px;padding:0">
+          <li>Buka <b>console.firebase.google.com</b> dengan akun Google, masuk ke proyek <b>laporan-aef1e</b> — cara tercepat: klik tombol <b>🚀 Buka Console Firebase</b> di atas.</li>
+          <li>Menu kiri: <b>Build → Realtime Database → Create Database</b>.</li>
+          <li>Pilih lokasi <b>Singapore (asia-southeast1)</b> → Next → pilih <b>Start in test mode</b> → Enable.</li>
+          <li>Buka tab <b>Rules</b>, ganti seluruh isinya dengan aturan di bawah ini (agar tidak kedaluwarsa seperti test mode), lalu klik <b>Publish</b>. <button class="btn ghost" id="btnFbRules" style="padding:2px 10px;font-size:12px">📋 Salin Aturan</button>
+<pre id="fbRules" style="background:#0f172a;color:#e2e8f0;border-radius:8px;padding:10px;font-size:12px;overflow:auto">{
+  "rules": {
+    "rooms": {
+      "$room": {
+        ".read": true,
+        ".write": true
+      }
+    }
+  }
+}</pre></li>
+          <li>Selesai di console — tidak perlu menyalin apa pun: aplikasi <b>otomatis tersambung sendiri</b> begitu database siap (dicek tiap ± 1 menit). Ingin langsung? Salin <b>Database URL</b> dari bagian atas halaman Realtime Database, tempel di kotak di atas, klik <b>🔌 Sambungkan</b>. Status di bawah judul berubah 🟢 <b>Tersinkron</b>.</li>
+        </ol>
+        <p class="hint">Catatan: aturan di atas memperbolehkan siapa pun yang tahu ID ruang membaca/menulis ruang itu — sama seperti layanan Bawaan. Jangan sebarkan tautan ruang ke luar tim.</p>
+      </details>
+    </div>
     <p class="hint">Tautan ruang disalin lewat <b>🔗 Salin Tautan Ruang</b> lalu dibagikan ke rekan satu tim (bukan ke WhatsApp pabrik). Perhatian: siapa pun yang punya tautan/ID ruang dapat melihat dan mengubah data — jangan sebarkan ke luar tim. Bila internet mati, data tetap tersimpan di perangkat dan tersinkron otomatis begitu online kembali.</p>
   </div>
   <div class="card">
@@ -254,6 +291,9 @@ var ROOM_KEY='laporanUnit.room';
 var TDB='https://textdb.dev/api/data/';
 var TDB_PRE='lumj-v1-';
 var DEF_ROOM='SMJ-VBHGFKPT5';
+var FB_KEY='laporanUnit.fburl';           // berisi database URL => layanan Firebase aktif
+var FB_MODE='laporanUnit.fbmode';         // 'tdb' = Bawaan dipilih eksplisit; selain itu Firebase otomatis
+var FB_DEF_URL='https://laporan-aef1e-default-rtdb.firebaseio.com'; // proyek Firebase milik pemilik aplikasi
 var KONTRAK={
   A:{nama:'KONTRAK MIL (WING BOX)',short:'MIL (WING BOX)'},
   B:{nama:'KONTRAK MIL (FUSO LONG)',short:'MIL (FUSO LONG)'},
@@ -294,11 +334,55 @@ function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){retur
 function toast(m){var t=el('toast');t.textContent=m;t.classList.add('show');clearTimeout(toast._h);toast._h=setTimeout(function(){t.classList.remove('show')},2600)}
 function latestDate(){if(!db.laporan.length)return todayISO();return db.laporan.map(function(l){return l.tanggal}).sort().reverse()[0]}
 
-// ==== SINKRON RUANG (cloud publik sederhana via textdb.dev) ====
-var SYNC={active:false,dirty:false,pushTimer:null,pullTimer:null,pushing:false,pulling:false,lastOk:0,lastBadge:'',warned:false};
+// ==== SINKRON RUANG (layanan pilihan: textdb.dev bawaan, atau Firebase Realtime Database milik sendiri) ====
+var SYNC={active:false,dirty:false,pushTimer:null,pullTimer:null,pushing:false,pulling:false,lastOk:0,lastBadge:'',warned:false,fbWarned:false,fbDown:false,probeT:null,probing:false,fbRuleWarned:false,es:null,esAt:0};
 function nowMs(){return Date.now()}
 function syncRoomId(){return localStorage.getItem(ROOM_KEY)||DEF_ROOM}
-function syncKey(){return TDB+TDB_PRE+syncRoomId()}
+function fbUrlRaw(){return (localStorage.getItem(FB_KEY)||'').trim()}
+function fbPath(rid){return '/rooms/'+String(rid).replace(/[.$#\[\]\/]/g,'-')+'/data'}
+function SVC(){
+  var rid=syncRoomId(),fb=fbUrlRaw();
+  if(fb&&!SYNC.fbDown){var u=fb.replace(/\/+$/,'')+fbPath(rid);return{kind:'fb',get:u,put:u,label:'Firebase (Google)'}}
+  return{kind:'tdb',get:TDB+TDB_PRE+rid,put:TDB+TDB_PRE+rid,label:fb?'Bawaan (sementara)':'Bawaan'};
+}
+// Database Firebase belum dibuat (404) → sinkron sementara lewat layanan Bawaan,
+// lalu dicek ulang otomatis sampai database jadi — tanpa setelan apa pun dari pengguna.
+function fbDownNow(){
+  if(SYNC.fbDown)return;
+  SYNC.fbDown=true;
+  syncBadge('off');
+  renderSyncCard();
+  scheduleFbProbe(5000);
+}
+function scheduleFbProbe(ms){if(SYNC.fbDown&&!SYNC.probeT)SYNC.probeT=setTimeout(probeFb,ms)}
+function probeFb(){
+  clearTimeout(SYNC.probeT);SYNC.probeT=null;
+  if(!SYNC.active||!fbUrlRaw()||!SYNC.fbDown||SYNC.probing)return;
+  SYNC.probing=true;
+  var u=fbUrlRaw().replace(/\/+$/,'')+fbPath(syncRoomId());
+  fetch(u,{method:'GET'}).then(function(r){
+    SYNC.probing=false;
+    if(r.status===404){scheduleFbProbe(60000);return}          // database masih belum dibuat
+    if(r.status===401||r.status===403){                        // database ada, aturan menolak
+      if(!SYNC.fbRuleWarned){SYNC.fbRuleWarned=true;toast('⚠ Database Firebase sudah ada, tetapi aturan (Rules) menolak akses — pasang aturan dari panduan, lalu klik 🔌 Sambungkan.')}
+      scheduleFbProbe(60000);return}
+    if(!r.ok){scheduleFbProbe(60000);return}
+    SYNC.fbDown=false;                                          // database siap → pindah ke Firebase
+    SYNC.fbWarned=false;SYNC.dirty=true;syncPush();
+    syncWatch();renderSyncCard();
+    toast('✓ Firebase aktif — sinkron sekarang lewat Firebase (Google).');
+  }).catch(function(){SYNC.probing=false;scheduleFbProbe(60000)});
+}
+function normalizeFbUrl(v){
+  v=String(v||'').trim();
+  if(!v)return'';
+  if(v.charAt(0)==='{'||v.indexOf('"databaseURL"')>=0||v.indexOf('"projectId"')>=0){
+    try{var c=JSON.parse(v);if(c&&c.databaseURL)v=String(c.databaseURL);
+    else if(c&&c.projectId)v='https://'+String(c.projectId)+'-default-rtdb.firebaseio.com';}catch(e){}
+  }
+  var m=v.match(/https:\/\/[A-Za-z0-9.\-]+(?:\.firebasedatabase\.app|\.firebaseio\.com)(?::\d+)?|https?:\/\/(?:localhost|127\.0\.0\.1)(?::\d+)?/);
+  return m?m[0].replace(/\/+$/,''):'';
+}
 function tomb(id){
   var u=nowMs(),found=null;
   db.delLog.forEach(function(t){if(t.id===id)found=t});
@@ -313,12 +397,16 @@ function mergeRemote(remote){
     var u=t.upd||0;
     if(log[t.id]==null||u>log[t.id]){log[t.id]=u;changed=true}
   });
-  // Mode review: data contoh kalah bila cloud sudah berisi data sungguhan
+  // Mode review: data contoh kalah bila cloud sudah berisi data sungguhan dari perangkat lain
+  // (gema push sendiri tidak dianggap data asli — dibandingkan dulu isinya)
   var remoteHasData=['laporan','tujuan','unit'].some(function(c){return Array.isArray(remote[c])&&remote[c].length});
   if(remoteHasData&&db.sample){
-    db.sample=false;changed=true;
-    ['laporan','tujuan','unit'].forEach(function(c){db[c].forEach(function(x){log[x.id]=Math.max(log[x.id]||0,nowMs())})});
-    db.laporan=[];db.tujuan=[];db.unit=[];
+    var echo=JSON.stringify([remote.laporan||[],remote.tujuan||[],remote.unit||[]])===JSON.stringify([db.laporan,db.tujuan,db.unit]);
+    if(!echo){
+      db.sample=false;changed=true;
+      ['laporan','tujuan','unit'].forEach(function(c){db[c].forEach(function(x){log[x.id]=Math.max(log[x.id]||0,nowMs())})});
+      db.laporan=[];db.tujuan=[];db.unit=[];
+    }
   }
   db.delLog=Object.keys(log).map(function(id){return{id:id,upd:log[id]}});
   function isDead(id){return log[id]!=null}
@@ -362,6 +450,7 @@ function syncBadge(mode,extra){
   if(mode==='ok')t.textContent='Tersinkron · Ruang '+room+(extra?' · '+extra:'');
   else if(mode==='wait')t.textContent='Menyinkronkan… · Ruang '+room;
   else t.textContent='Luring — data disimpan di perangkat ini · Ruang '+room;
+  if(SYNC.fbDown)t.textContent+=' · layanan Bawaan (menunggu database Firebase)';
   SYNC.lastBadge=mode;
 }
 function syncMarkDirty(){
@@ -373,23 +462,33 @@ function syncMarkDirty(){
 }
 function syncPush(){
   if(!SYNC.active||!SYNC.dirty||SYNC.pushing)return;
+  if(db.sample){SYNC.dirty=false;syncBadge('ok','data contoh — belum dikirim ke ruang');return} // jangan pernah mendorong data contoh ke ruang
   SYNC.pushing=true;SYNC.dirty=false;
-  var body=JSON.stringify(db);
+  var body=JSON.stringify(db),s=SVC();
   if(body.length>280000&&!SYNC.warned){SYNC.warned=true;toast('⚠ Data ruang sudah sangat besar ('+Math.round(body.length/1000)+' KB) — pertimbangkan menghapus laporan lama.')}
-  fetch(syncKey(),{method:'POST',body:body}).then(function(r){
+  fetch(s.put,{method:s.kind==='fb'?'PUT':'POST',body:body}).then(function(r){
+    if(s.kind==='fb'&&r.status===404){SYNC.pushing=false;fbDownNow();SYNC.dirty=true;syncPush();return}
     if(!r.ok)throw new Error('HTTP '+r.status);
-    SYNC.lastOk=nowMs();SYNC.dirty=false;
+    SYNC.lastOk=nowMs();SYNC.dirty=false;SYNC.fbWarned=false;
     syncBadge('ok',new Date().toLocaleTimeString('id-ID'));
   }).catch(function(){
     SYNC.dirty=true;
     syncBadge('off');
+    if(s.kind==='fb'&&!SYNC.fbWarned){SYNC.fbWarned=true;toast('⚠ Firebase belum terhubung — cek Database URL & aturan (lihat panduan di tab ini).')}
   }).then(function(){SYNC.pushing=false});
 }
 function syncPull(){
   if(!SYNC.active||SYNC.pulling)return;
   SYNC.pulling=true;
-  fetch(syncKey(),{method:'GET'}).then(function(r){
-    if(r.status===404)return '';           // ruang masih kosong
+  pullOnce().then(function(){SYNC.pulling=false},function(){SYNC.pulling=false});
+}
+function pullOnce(){
+  var s=SVC();
+  return fetch(s.get,{method:'GET'}).then(function(r){
+    if(r.status===404){
+      if(s.kind==='fb'){fbDownNow();return pullOnce()} // DB Firebase belum ada → ulangi lewat layanan Bawaan
+      return '';                                       // ruang masih kosong
+    }
     if(!r.ok)throw new Error('HTTP '+r.status);
     return r.text();
   }).then(function(txt){
@@ -409,7 +508,8 @@ function syncPull(){
     else{SYNC.lastOk=nowMs();syncBadge('ok',new Date().toLocaleTimeString('id-ID'))}
   }).catch(function(){
     syncBadge('off');
-  }).then(function(){SYNC.pulling=false});
+    if(SVC().kind==='fb'&&!SYNC.fbWarned){SYNC.fbWarned=true;toast('⚠ Firebase belum terhubung — cek Database URL & aturan (lihat panduan di tab ini).')}
+  });
 }
 function syncNow(manual){
   if(!SYNC.active)return;
@@ -419,6 +519,34 @@ function syncNow(manual){
   SYNC.pushTimer=setTimeout(syncPush,1200);
   if(manual)toast('🔄 Menarik & mendorong data ke ruang…');
 }
+function syncWatch(){
+  if(SYNC.es){try{SYNC.es.close()}catch(e){} SYNC.es=null}
+  var s=SVC();
+  if(s.kind!=='fb'||typeof EventSource!=='function')return;
+  try{
+    var es=new EventSource(s.get);      // stream perubahan Realtime Database (REST SSE)
+    ['put','patch'].forEach(function(ev){
+      es.addEventListener(ev,function(){
+        var n=nowMs();if(n-(SYNC.esAt||0)<1200)return;SYNC.esAt=n;
+        if(SYNC.active)syncPull();
+      });
+    });
+    SYNC.es=es;
+  }catch(e){}
+}
+function fbConnect(){
+  var u=normalizeFbUrl(el('fbUrl').value);
+  if(!u){toast('⚠ URL Firebase tidak dikenali — tempel URL yang disalin dari console Firebase (https://…firebasedatabase.app).');return}
+  localStorage.setItem(FB_KEY,u);localStorage.setItem(FB_MODE,'fb');
+  SYNC.fbDown=false;SYNC.fbRuleWarned=false;SYNC.fbWarned=false;SYNC.dirty=false;
+  syncBadge('wait');syncWatch();syncPull();renderSyncCard();
+  toast('Memeriksa database Firebase…');
+}
+function fbDisconnect(){
+  localStorage.removeItem(FB_KEY);localStorage.setItem(FB_MODE,'tdb');
+  SYNC.dirty=false;syncBadge('wait');syncWatch();syncPull();renderSyncCard();
+  toast('Kembali ke layanan Bawaan (langsung jalan).');
+}
 function syncJoinRoom(input){
   var v=String(input||'').trim();
   if(!v){toast('⚠ Tempel ID ruang atau tautannya dulu.');return}
@@ -426,9 +554,10 @@ function syncJoinRoom(input){
   var id=m?m[1]:v;
   if(!/^[A-Za-z0-9\-]{4,40}$/.test(id)){toast('⚠ Format ID ruang tidak dikenal (contoh: SMJ-ABC123XYZ).');return}
   localStorage.setItem(ROOM_KEY,id);
+  applySvcParam(v);
   SYNC.dirty=false;
   syncBadge('wait');
-  syncPull();
+  syncWatch();syncPull();
   renderSyncCard();
   toast('✓ Bergabung ke ruang '+id+' — menarik datanya…');
 }
@@ -437,33 +566,74 @@ function syncNewRoom(){
   var chars='ABCDEFGHJKLMNPQRSTUVWXYZ23456789',s='SMJ-';
   for(var i=0;i<8;i++)s+=chars.charAt(Math.floor(Math.random()*chars.length));
   localStorage.setItem(ROOM_KEY,s);
-  SYNC.dirty=true;syncPush();
+  SYNC.dirty=true;syncPush();syncWatch();
   renderSyncCard();
   toast('✓ Ruang baru: '+s+' — bagikan tautannya lewat 🔗 Salin Tautan Ruang.');
 }
 function syncUseDefault(){
   localStorage.removeItem(ROOM_KEY);
   SYNC.dirty=false;syncBadge('wait');
-  syncPull();renderSyncCard();
+  syncWatch();syncPull();renderSyncCard();
   toast('Kembali ke ruang bawaan '+DEF_ROOM+'.');
+}
+// Pilihan layanan ikut terbawa dalam tautan ruang (…&l=fb&dbu=… atau …&l=tdb),
+// jadi perangkat yang bergabung otomatis memakai layanan yang sama dengan pemilik tautan.
+function applySvcParam(t){
+  t=String(t||'');
+  var m=t.match(/[?&#]l=(fb|tdb)(?=&|#|$)/);
+  if(!m)return false;
+  if(m[1]==='fb'){
+    var du=(t.match(/[?&]dbu=([^&#]+)/)||[])[1];
+    if(du){try{du=decodeURIComponent(du)}catch(e){}du=normalizeFbUrl(du)}
+    localStorage.setItem(FB_MODE,'fb');
+    localStorage.setItem(FB_KEY,du||FB_DEF_URL);
+    SYNC.fbDown=false;SYNC.fbRuleWarned=false;
+  }else{
+    localStorage.setItem(FB_MODE,'tdb');
+    localStorage.removeItem(FB_KEY);
+    SYNC.fbDown=false;
+  }
+  renderSyncCard();
+  return true;
 }
 function syncRoomLink(){
   var base=location.href.split(/[?#]/)[0];
   var url=base+'?ruang='+encodeURIComponent(syncRoomId());
+  if(fbUrlRaw())url+='&l=fb&dbu='+encodeURIComponent(fbUrlRaw());
+  else url+='&l=tdb';
   copyText(url);
 }
 function renderSyncCard(){
-  var room=syncRoomId(),isDef=room===DEF_ROOM;
+  var room=syncRoomId(),isDef=room===DEF_ROOM,svc=SVC();
   var info=el('syncRoomInfo');
-  if(info)info.innerHTML='Ruang saat ini: <b><code>'+esc(room)+'</code></b>'+(isDef?' <span class="badge st-inap">ruang bawaan</span>':' <span class="badge st-kirim">ruang khusus</span>');
+  if(info)info.innerHTML='Ruang saat ini: <b><code>'+esc(room)+'</code></b>'+(isDef?' <span class="badge st-inap">ruang bawaan</span>':' <span class="badge st-kirim">ruang khusus</span>')+' · Layanan: <b>'+esc(svc.label)+'</b>';
   var def=el('btnRoomDef');if(def)def.hidden=isDef;
+  var sel=el('svcSel');
+  if(sel&&!sel.dataset.touched)sel.value=fbUrlRaw()?'fb':'tdb';
+  var panel=el('fbPanel');
+  if(panel)panel.hidden=!(sel&&sel.value==='fb');
+  var inp=el('fbUrl');
+  if(inp&&!inp.value)inp.value=fbUrlRaw()||FB_DEF_URL;
+  var st=el('fbState');
+  if(st)st.innerHTML=!fbUrlRaw()
+    ?('Aplikasi memakai layanan <b>Bawaan</b>. Untuk memakai Firebase (Google), pilih <b>Firebase</b> di atas — URL proyek Anda sudah terisi otomatis.')
+    :(SYNC.fbDown
+      ?('Firebase dipilih, tetapi <b>Realtime Database-nya belum dibuat</b> — sinkron sementara otomatis lewat layanan <b>Bawaan</b>. Begitu database dibuat (panduan di bawah), aplikasi pindah ke Firebase sendiri tanpa setelan apa pun. URL: <code>'+esc(fbUrlRaw())+'</code>')
+      :('Tersambung ke Firebase: <code>'+esc(fbUrlRaw())+'</code>. Untuk berpindah kembali ke layanan Bawaan, ubah <b>Layanan sinkron</b> di atas.'));
+  if(panel&&SYNC.fbDown){var det=panel.querySelector('details');if(det)det.open=true}
 }
 function syncInit(){
   var m=location.search.match(/[?&]ruang=([A-Za-z0-9\-]+)/)||location.hash.match(/[#&]ruang=([A-Za-z0-9\-]+)/);
   if(m)localStorage.setItem(ROOM_KEY,m[1]);
+  applySvcParam(location.search);applySvcParam(location.hash);
+  // Firebase otomatis: kecuali pengguna eksplisit memilih Bawaan, proyek pemilik aplikasi dipakai
+  // begitu Realtime Database-nya dibuat (sebelum itu otomatis gagal-aman ke layanan Bawaan).
+  if(localStorage.getItem(FB_MODE)!=='tdb'&&!fbUrlRaw())localStorage.setItem(FB_KEY,FB_DEF_URL);
+  SYNC.fbDown=false;   // cek ulang database setiap halaman dibuka
   SYNC.active=true;
   renderSyncCard();
   syncBadge('wait');
+  syncWatch();
   syncPull();
   SYNC.pullTimer=setInterval(function(){syncPull();if(SYNC.dirty)syncPush()},10000);
   window.addEventListener('focus',function(){syncPull();if(SYNC.dirty)syncPush()});
@@ -474,13 +644,13 @@ function syncInit(){
 function seed(){
   var d=blank();d.sample=true;
   d.tujuan=['Catur Sentosa Anugrah','CSA Gudang Cikarang','Depot Cibitung','Workshop Cakung'].map(function(n){return{id:uid(),nama:n}});
-  d.unit=[['B 9526 UPA','C'],['B 9561 UYV','C'],['B 9563 UYV','C'],['B 9673 BYT','C'],['B 9729 AU','D']].map(function(u){return{id:uid(),unit:u[0],kontrak:u[1]}});
+  d.unit=[['B 9526 UPA','A'],['B 9031 UKZ','B'],['B 9445 TYA','C'],['B 9218 USD','D'],['B 9220 USD','D']].map(function(u){return{id:uid(),unit:u[0],kontrak:u[1]}});
   d.laporan=[
-    {id:uid(),tanggal:'2026-10-05',unit:'B 9526 UPA',kontrak:'C',status:'Inap',tujuan:'Catur Sentosa Anugrah (Bayur)'},
-    {id:uid(),tanggal:'2026-10-05',unit:'B 9561 UYV',kontrak:'C',status:'Standby',tujuan:'Catur Sentosa Anugrah (Daan Mogot)'},
-    {id:uid(),tanggal:'2026-10-05',unit:'B 9563 UYV',kontrak:'C',status:'Inap',tujuan:'Catur Sentosa Anugrah (Serang)'},
-    {id:uid(),tanggal:'2026-10-05',unit:'B 9673 BYT',kontrak:'C',status:'Storing Perbaikan',tujuan:'Catur Sentosa Anugrah (Bogor)'},
-    {id:uid(),tanggal:'2026-10-05',unit:'B 9729 AU',kontrak:'C',status:'Kirim',tujuan:'Catur Sentosa Anugrah (Tambun)'}
+    {id:uid(),tanggal:'2026-10-05',unit:'B 9526 UPA',kontrak:'A',status:'Inap',tujuan:'Catur Sentosa Anugrah'},
+    {id:uid(),tanggal:'2026-10-05',unit:'B 9031 UKZ',kontrak:'B',status:'Standby',tujuan:'Depot Cibitung'},
+    {id:uid(),tanggal:'2026-10-05',unit:'B 9445 TYA',kontrak:'C',status:'Inap',tujuan:'CSA Gudang Cikarang'},
+    {id:uid(),tanggal:'2026-10-05',unit:'B 9218 USD',kontrak:'D',status:'Storing Perbaikan',tujuan:'Workshop Cakung'},
+    {id:uid(),tanggal:'2026-10-05',unit:'B 9220 USD',kontrak:'D',status:'Kirim',tujuan:'Depot Cibitung'}
   ];
   localStorage.setItem(LS_KEY,JSON.stringify(d));
   return d;
@@ -1401,6 +1571,24 @@ el('btnRoomLink').addEventListener('click',syncRoomLink);
 el('btnRoomNew').addEventListener('click',syncNewRoom);
 el('btnRoomDef').addEventListener('click',syncUseDefault);
 el('btnRoomJoin').addEventListener('click',function(){syncJoinRoom(el('roomJoin').value)});
+el('svcSel').addEventListener('change',function(){
+  this.dataset.touched='1';
+  var panel=el('fbPanel');
+  if(this.value==='fb'){
+    localStorage.setItem(FB_MODE,'fb');
+    panel.hidden=false;el('fbUrl').value=fbUrlRaw()||FB_DEF_URL;
+    if(!fbUrlRaw()){localStorage.setItem(FB_KEY,FB_DEF_URL);SYNC.fbDown=false;SYNC.dirty=true;syncPush()}
+    renderSyncCard();syncWatch();syncPull();
+  }
+  else if(fbUrlRaw()){fbDisconnect()}
+  else{localStorage.setItem(FB_MODE,'tdb');panel.hidden=true}
+});
+el('btnFbSave').addEventListener('click',fbConnect);
+el('btnFbRules').addEventListener('click',function(){copyText(el('fbRules').textContent)});
+el('btnFbConsole').addEventListener('click',function(){
+  var m=(fbUrlRaw()||FB_DEF_URL).match(/^https:\/\/(.+?)-default-rtdb(?:\.[a-z0-9\-]+)?\.(?:firebasedatabase\.app|firebaseio\.com)/);
+  window.open('https://console.firebase.google.com/project/'+(m?m[1]:'')+'/database','_blank');
+});
 el('roomJoin').addEventListener('keydown',function(e){if(e.key==='Enter')syncJoinRoom(this.value)});
 
 el('fTgl').value=todayISO();
